@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Vekt & trening</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EDEFE8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Vekt">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%231F6B57'/%3E%3Crect x='34' y='96' width='112' height='16' rx='3' fill='%23EDEFE8'/%3E%3Crect x='34' y='96' width='72' height='16' rx='3' fill='%237FC04A'/%3E%3Crect x='102' y='86' width='5' height='36' fill='%23EDEFE8'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231F6B57'/%3E%3Crect x='6' y='17' width='20' height='4' fill='%237FC04A'/%3E%3C/svg%3E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#EDEFE8; --card:#FFFFFF; --ink:#15211C; --muted:#6B7871; --line:#D2D8CE;
+  --pine:#1F6B57; --pine-lys:#CDE0D8; --lime:#7FC04A;
+  --viol:#5B3FD1; --viol-lys:#E4DEFB;
+  --hav:#1687A7; --hav-lys:#D3EBF2;
+  --rust:#C4451F; --rust-lys:#F8E2DA;
+  --okse:#C08419; --okse-lys:#F7E9CB;
+  --font-d:'Archivo', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-m:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--font-d);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font-family:inherit;cursor:pointer;}
+:focus-visible{outline:2px solid var(--viol);outline-offset:2px;}
+
+#skjerm{padding:22px 18px 110px;max-width:560px;margin:0 auto;}
+
+.eyebrow{font-family:var(--font-m);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;}
+.topp{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.topp h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:2px 0 0;}
+h2.seksjon{font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px;}
+.uke-merke{font-family:var(--font-m);font-size:20px;font-weight:600;text-align:right;line-height:1.1;}
+.uke-merke span{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-top:3px;}
+
+.gauge{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:18px 16px 14px;}
+.gauge-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+.big{font-family:var(--font-m);font-size:52px;font-weight:600;letter-spacing:-.03em;line-height:1;margin-top:4px;font-variant-numeric:tabular-nums;}
+.big-over{color:var(--rust);}
+.gauge-side{min-width:118px;padding-top:4px;}
+.side-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:2.5px 0;}
+.side-row b{font-family:var(--font-m);color:var(--ink);font-variant-numeric:tabular-nums;font-weight:500;}
+.side-sum{border-top:1px solid var(--line);margin-top:4px;padding-top:5px;}
+.track{position:relative;height:12px;background:var(--paper);border:1px solid var(--line);margin-top:18px;overflow:hidden;}
+.track-main{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--pine),var(--lime));transition:width .35s;}
+.track-over{position:absolute;top:0;bottom:0;background:var(--rust);transition:width .35s;}
+.track-line{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);}
+.track-labels{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--font-m);font-size:10px;color:var(--muted);}
+
+.pbar-wrap{background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 3px 3px;padding:12px 16px 14px;}
+.pbar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.pbar-num{font-family:var(--font-m);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.pbar-num b{color:var(--ink);font-weight:600;font-size:15px;}
+.pbar{height:6px;background:var(--paper);border:1px solid var(--line);overflow:hidden;}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--okse),#E0A63E);transition:width .35s;}
+
+.okt-kort{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px 16px;margin-top:14px;}
+.okt-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px;}
+.okt-teller{font-family:var(--font-m);font-size:12px;font-weight:600;white-space:nowrap;}
+.okt-rad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.okt-brikke{background:var(--paper);border:1px solid var(--line);border-left-width:3px;padding:9px 6px;text-align:left;border-radius:2px;}
+.okt-brikke.type-kondis{border-left-color:var(--viol);background:var(--viol-lys);}
+.okt-brikke.type-styrke{border-left-color:var(--okse);background:var(--okse-lys);}
+.okt-brikke.type-test{border-left-color:var(--hav);background:var(--hav-lys);}
+.okt-brikke.okt-gjort{background:var(--pine);border-color:var(--pine);}
+.okt-gjort .okt-nr,.okt-gjort .okt-t{color:#fff;}
+.okt-nr{display:block;font-family:var(--font-m);font-size:9.5px;color:var(--muted);}
+.okt-t{display:block;font-size:11.5px;font-weight:600;margin-top:3px;line-height:1.25;}
+.aq-linje{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:11.5px;color:var(--muted);}
+.aq-linje b{font-family:var(--font-m);color:var(--ink);font-size:12px;white-space:nowrap;}
+.aq-track{flex:1;height:5px;background:var(--paper);border:1px solid var(--line);}
+.aq-fill{height:100%;background:linear-gradient(90deg,var(--hav),var(--lime));transition:width .35s;}
+
+ul.liste{list-style:none;margin:0;padding:0;}
+.post{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-bottom:none;padding:11px 14px;}
+.post:last-child{border-bottom:1px solid var(--line);}
+.post-venstre{display:flex;gap:11px;align-items:center;min-width:0;}
+.pil{font-family:var(--font-m);font-size:13px;width:19px;height:19px;display:grid;place-items:center;border-radius:50%;flex-shrink:0;}
+.pil-opp{background:var(--pine-lys);color:var(--pine);}
+.pil-ned{background:var(--viol-lys);color:var(--viol);}
+.post-navn{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.post-sub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.post-hoyre{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.post-hoyre b{font-family:var(--font-m);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;}
+.x{background:none;border:none;color:var(--muted);font-size:12px;padding:4px;}
+
+.tom-boks{background:var(--card);border:1px dashed var(--line);border-radius:3px;padding:20px 16px;text-align:center;font-size:13px;color:var(--muted);line-height:1.5;}
+
+.sok-boks{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px 16px 15px;}
+.sok-rad{display:flex;gap:7px;margin-top:7px;}
+.input{width:100%;padding:11px 12px;font-size:15px;font-family:inherit;background:var(--paper);border:1px solid var(--line);border-radius:2px;color:var(--ink);}
+.input::placeholder{color:var(--muted);}
+.input-mini{width:56px;text-align:center;font-family:var(--font-m);padding:11px 4px;}
+.hint{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.45;}
+.knapp{padding:11px 16px;font-size:14px;font-weight:600;border:1px solid var(--ink);background:var(--card);color:var(--ink);border-radius:2px;white-space:nowrap;}
+.knapp-primar{background:var(--pine);border-color:var(--pine);color:#fff;}
+.knapp-blokk{width:100%;}
+.knapp-fare{width:100%;border-color:var(--rust);color:var(--rust);}
+.feil{background:var(--rust-lys);border:1px solid #E8C4B6;border-radius:3px;padding:13px 15px;font-size:13px;line-height:1.5;margin-top:12px;color:#7C2C17;}
+
+.treff{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--pine);border-radius:2px;padding:12px 14px;margin-top:9px;}
+.treff-navn{font-size:14.5px;font-weight:600;}
+.treff-sub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.treff-tall{display:flex;gap:14px;margin-top:6px;font-size:11.5px;color:var(--muted);font-family:var(--font-m);}
+.treff-tall b{color:var(--ink);font-size:13px;font-weight:600;}
+.treff-add{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+
+.hurtig{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.hurtig-knapp{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:11px 12px;text-align:left;}
+.hurtig-navn{display:block;font-size:13px;font-weight:600;line-height:1.25;}
+.hurtig-tall{display:block;font-family:var(--font-m);font-size:10.5px;color:var(--muted);margin-top:4px;}
+
+.kort{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:15px 16px;display:flex;flex-direction:column;gap:10px;}
+.to{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end;}
+.tre{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.felt{display:flex;flex-direction:column;gap:5px;}
+.felt label{font-family:var(--font-m);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.valg{display:flex;gap:6px;}
+.valg-knapp{flex:1;padding:10px 4px;font-size:12.5px;font-weight:600;background:var(--paper);border:1px solid var(--line);border-radius:2px;color:var(--muted);}
+.valg-aktiv{background:var(--ink);border-color:var(--ink);color:#fff;}
+.bryter{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--muted);cursor:pointer;}
+.bryter input{margin-top:2px;accent-color:var(--pine);width:17px;height:17px;flex-shrink:0;}
+.regne{border:1px solid var(--line);border-radius:2px;padding:11px 13px;background:var(--paper);}
+.regne-rad{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:3px 0;}
+.regne-rad b{font-family:var(--font-m);color:var(--ink);font-weight:500;}
+.regne-sum{border-top:1px solid var(--line);margin-top:5px;padding-top:7px;}
+.regne-sum b{font-size:16px;font-weight:600;color:var(--pine);}
+
+.bars{display:flex;gap:5px;align-items:flex-end;margin-top:12px;}
+.bar-col{flex:1;text-align:center;}
+.bar-slot{position:relative;height:118px;display:flex;align-items:flex-end;background:var(--paper);border-bottom:1px solid var(--line);}
+.bar{width:100%;background:linear-gradient(180deg,var(--lime),var(--pine));transition:height .4s;}
+.bar-over{background:var(--rust);}
+.bar-tom{background:var(--line);}
+.bar-goal{position:absolute;left:-2px;right:-2px;height:1px;background:var(--ink);opacity:.45;}
+.bar-lbl{font-family:var(--font-m);font-size:9.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.bar-val{font-family:var(--font-m);font-size:10.5px;margin-top:1px;}
+.stat-rad{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:13px 15px;}
+.stat-num{font-family:var(--font-m);font-size:27px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.gronn{color:var(--pine);} .rod{color:var(--rust);}
+.notat{background:var(--viol-lys);border-left:3px solid var(--viol);padding:12px 14px;font-size:12.5px;line-height:1.55;margin-top:12px;}
+
+.graf-head{display:flex;justify-content:space-between;align-items:flex-start;}
+.graf-num{font-family:var(--font-m);font-size:26px;font-weight:600;margin-top:3px;}
+.delta{font-family:var(--font-m);font-size:14px;font-weight:600;padding:4px 9px;border-radius:2px;}
+.delta-ned{background:var(--pine-lys);color:var(--pine);}
+.delta-opp{background:var(--rust-lys);color:var(--rust);}
+.graf{width:100%;height:auto;margin-top:12px;overflow:visible;}
+.graf-linje{fill:none;stroke:var(--hav);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+.graf-prikk{fill:var(--card);stroke:var(--hav);stroke-width:1.6;}
+.graf-maal{stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;opacity:.4;}
+.graf-fot{display:flex;justify-content:space-between;font-family:var(--font-m);font-size:10px;color:var(--muted);margin-top:6px;}
+
+.ukeliste{margin-top:14px;border:1px solid var(--line);border-radius:3px;overflow:hidden;}
+.ukerad{border-bottom:1px solid var(--line);background:var(--card);}
+.ukerad:last-child{border-bottom:none;}
+.ukerad-naa{background:var(--viol-lys);box-shadow:inset 3px 0 0 var(--viol);}
+.ukerad-hull{background:var(--rust-lys);box-shadow:inset 3px 0 0 var(--rust);}
+.ukerad-topp{display:flex;align-items:center;gap:9px;width:100%;padding:12px 13px;background:none;border:none;text-align:left;}
+.ukerad-nr{font-family:var(--font-m);font-size:11px;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
+.ukerad-tittel{flex:1;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ukerad-status{font-family:var(--font-m);font-size:11.5px;color:var(--muted);flex-shrink:0;}
+.ukerad-status.ferdig{color:var(--pine);font-weight:600;background:var(--pine-lys);padding:2px 7px;border-radius:10px;}
+.karet{font-size:17px;color:var(--muted);transform:rotate(90deg);flex-shrink:0;line-height:1;}
+.karet-opp{transform:rotate(-90deg);}
+.ukerad-innhold{padding:0 13px 13px;display:flex;flex-direction:column;gap:13px;}
+.dag{border-top:1px solid var(--line);padding-top:11px;padding-left:9px;border-left:3px solid var(--line);}
+.dag.type-kondis{border-left-color:var(--viol);}
+.dag.type-styrke{border-left-color:var(--okse);}
+.dag.type-test{border-left-color:var(--hav);}
+.dag-topp{display:flex;gap:10px;align-items:flex-start;width:100%;background:none;border:none;text-align:left;padding:0;}
+.hake{width:21px;height:21px;border:1.5px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:12px;color:transparent;flex-shrink:0;background:var(--card);}
+.dag-gjort .hake{background:var(--pine);border-color:var(--pine);color:#fff;}
+.dag-tekst{flex:1;}
+.dag-tekst b{display:block;font-size:13.5px;line-height:1.3;}
+.dag-tall{display:block;font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:4px;}
+.merke{display:inline-block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;margin-right:7px;font-weight:600;font-family:var(--font-d);}
+.type-kondis .merke{background:var(--viol-lys);color:var(--viol);}
+.type-styrke .merke{background:var(--okse-lys);color:var(--okse);}
+.type-test .merke{background:var(--hav-lys);color:var(--hav);}
+.deler{margin:9px 0 0 31px;padding:0 0 0 15px;font-size:12.5px;line-height:1.6;color:var(--muted);}
+.ovelser{margin:10px 0 0 31px;display:flex;flex-direction:column;gap:5px;}
+.ovelse{font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;}
+.maskin{color:var(--pine);font-size:12px;}
+.maskinrad{border-bottom:1px solid var(--line);padding-bottom:9px;}
+.maskinrad:last-of-type{border-bottom:none;padding-bottom:0;}
+.maskin-ovelse{font-size:13.5px;font-weight:600;}
+.maskin-navn{font-size:12.5px;color:var(--pine);margin-top:2px;}
+.maskin-alt{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45;}
+.fotnote{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:22px;padding-top:14px;border-top:1px solid var(--line);}
+
+nav.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);max-width:560px;margin:0 auto;}
+.tab{flex:1;padding:13px 2px 14px;background:none;border:none;font-size:11px;font-weight:600;color:var(--muted);border-top:2px solid transparent;margin-top:-1px;}
+.tab-aktiv{color:var(--viol);border-top-color:var(--viol);}
+#toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 17px;border-radius:2px;font-size:12.5px;font-weight:600;z-index:50;white-space:nowrap;display:none;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<div id="skjerm"></div>
+<div id="toast"></div>
+<nav class="tabs" id="tabs"></nav>
+
+<script>
+/* ---------------- Program og maskiner ---------------- */
+const PROGRAM = [
+ {uke:1,tittel:"Finn ditt utgangspunkt",dager:[
+  {navn:"Testløype",min:"15–20",aq:"15–20",type:"kondis",deler:["5–10 min rolig oppvarming","10 min maksimal innsats – mål distansen","Noter meter i MIA"]},
+  {navn:"Funksjonelle styrketester",min:"5–10",aq:"0–5",type:"styrke",deler:["Armhevinger – maks reps","Planken – maks tid","Ryggplanken – maks tid"],ovelser:["Armhevinger","Planken","Ryggplanken"]},
+  {navn:"Puls og kroppsmål",min:"40–50",aq:"40–50",type:"test",deler:["Finn hvilepuls (dagtid)","Makspulstest – tre drag, siste til utmattelse","BMI og midjemål"]}]},
+ {uke:2,tittel:"Bli kjent med intervalltrening",dager:[
+  {navn:"Første 4-minutters drag",min:"24",aq:"10–15",type:"kondis",deler:["15 min oppvarming","4 min høy innsats – 85–90 % av makspuls","10 min nedtrapping"]},
+  {navn:"Rolig økt + kjernestyrke",min:"40",aq:"10–20",type:"styrke",deler:["10 min oppvarming","20 min jevnt, litt hardere enn oppvarming","Kjernestyrkeprogram"],ovelser:["Armhevinger","Knebøy","Spensthopp","Sit-ups"]},
+  {navn:"To intervalldrag",min:"31",aq:"20–30",type:"kondis",deler:["10 min oppvarming","4 min høy innsats","3 min aktiv pause","4 min høy innsats","10 min nedtrapping"]}]},
+ {uke:3,tittel:"Vi trapper opp",dager:[
+  {navn:"To intervalldrag",min:"31",aq:"20–30",type:"kondis",deler:["10 min oppvarming","4 min høy innsats","3 min aktiv pause","4 min høy innsats","10 min nedtrapping"]},
+  {navn:"Tre intervalldrag",min:"33",aq:"30–40",type:"kondis",deler:["10 min oppvarming","4 min høy innsats","3 min aktiv pause","4 min høy innsats","3 min aktiv pause","4 min høy innsats","5 min nedtrapping"]},
+  {navn:"Kjernestyrkeprogram",min:"15–20",aq:"5–10",type:"styrke",deler:["10 min oppvarming til du svetter","10 reps av hver øvelse, 20 sek pause mellom"],ovelser:["Utfall","Spensthopp","Planken","Fuglehunden","Skrå sit-ups","Dips"]}]}
+];
+
+const MASKINER = {
+ "Armhevinger":{m:"Brystpress-maskin",alt:"Benkpress i Smith, eller stående kabelpress"},
+ "Knebøy":{m:"Beinpress",alt:"Hack squat eller knebøy i Smith-maskin"},
+ "Spensthopp":{m:"Rask beinpress – kontrollert ned, eksplosivt opp",alt:"Step-ups på lav kasse. Hopp er hardt for knær ved høy kroppsvekt"},
+ "Utfall":{m:"Ettbeins beinpress",alt:"Utfall med manualer, eller bulgarske utfall i Smith"},
+ "Sit-ups":{m:"Magemaskin (ab crunch)",alt:"Kabelcrunch med tau, knestående"},
+ "Skrå sit-ups":{m:"Rotasjonsmaskin",alt:"Stående kabelrotasjon"},
+ "Ryggplanken":{m:"Ryggekstensjon på romerstol (45°)",alt:"Lettest å dosere av alle byttene"},
+ "Fuglehunden":{m:"Ryggekstensjon på romerstol (45°)",alt:"Lav vekt, høye reps"},
+ "Dips":{m:"Dipsmaskin med motvekt",alt:"Triceps pushdown i kabel"},
+ "Planken":{m:"Behold som den er",alt:"Ingen maskin gjør jobben bedre"}
+};
+
+const STANDARD_HURTIG=[
+ {navn:"Havregrøt m/ melk",kcal:350,protein:14},{navn:"4 egg",kcal:300,protein:25},
+ {navn:"Kyllingfilet 200 g",kcal:330,protein:62},{navn:"Skyr 350 g",kcal:220,protein:38},
+ {navn:"Brødskive m/ pålegg",kcal:180,protein:8},{navn:"Proteinshake",kcal:130,protein:27}];
+
+/* ---------------- Hjelpere ---------------- */
+const KEY='vekt-tracker-v3';
+const DAGER=["Søn","Man","Tir","Ons","Tor","Fre","Lør"];
+const MND=["jan","feb","mar","apr","mai","jun","jul","aug","sep","okt","nov","des"];
+const todayKey=(d=new Date())=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10);};
+const addDays=(s,n)=>{const d=new Date(s+"T12:00:00");d.setDate(d.getDate()+n);return todayKey(d);};
+const prettyDate=k=>{const d=new Date(k+"T12:00:00");return DAGER[d.getDay()]+" "+d.getDate()+". "+MND[d.getMonth()];};
+const uid=()=>Math.random().toString(36).slice(2,10);
+const round=(n,d=0)=>{const f=Math.pow(10,d);return Math.round((Number(n)||0)*f)/f;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const hentUke=n=>PROGRAM.find(p=>p.uke===n)||{uke:n,tittel:"",dager:[
+ {navn:"Økt 1",min:"–",aq:"–",type:"kondis",deler:[]},
+ {navn:"Økt 2",min:"–",aq:"–",type:"styrke",deler:[]},
+ {navn:"Økt 3",min:"–",aq:"–",type:"kondis",deler:[]}]};
+
+const finnAktivUke=s=>{for(let u=1;u<=16;u++){if(![0,1,2].every(i=>s["u"+u+"-"+i]))return u;}return 16;};
+
+function defaultState(){return{
+ settings:{sex:"mann",age:45,height:173,startWeight:110,goalWeight:95,activity:1.4,
+   kcalTarget:2100,proteinTarget:150,autoTarget:true,deficit:600,aqGoal:100,apiKey:""},
+ entries:[],weights:[],sessions:{"u1-0":true,"u1-1":true,"u1-2":true},seeded:true};}
+
+function beregnMaal(s,vekt){
+ const w=Number(vekt)||Number(s.startWeight)||110;
+ const bmr=10*w+6.25*Number(s.height)-5*Number(s.age)+(s.sex==="mann"?5:-161);
+ const tdee=bmr*Number(s.activity);
+ const kcal=Math.max(s.sex==="mann"?1800:1500,Math.round((tdee-Number(s.deficit))/10)*10);
+ const protein=Math.round((1.6*Math.min(w,100))/5)*5;
+ return{bmr:Math.round(bmr),tdee:Math.round(tdee),kcal,protein};}
+
+/* ---------------- State ---------------- */
+let state=defaultState(), tab='idag', apen=-1, visMaskiner=false, treff=[], sokFeil='', laster=false;
+
+try{const r=localStorage.getItem(KEY);
+ if(r){const p=JSON.parse(r);const b=defaultState();
+  state={...b,...p,settings:{...b.settings,...(p.settings||{})}};
+  if(!p.seeded){state.sessions={...state.sessions,"u1-0":true,"u1-1":true,"u1-2":true};state.seeded=true;}}
+}catch(e){}
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast("Fikk ikke lagret");}}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.display='block';
+ clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',1800);}
+
+/* ---------------- Matsøk ---------------- */
+async function sokMat(q){
+ const key=(state.settings.apiKey||'').trim();
+ if(!key)throw new Error('nokkel');
+ const res=await fetch('https://api.anthropic.com/v1/messages',{
+  method:'POST',
+  headers:{'Content-Type':'application/json','x-api-key':key,
+   'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+  body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
+   system:'Du er en norsk næringsdatabase. Du kjenner norske matvarer, merkevarer (Tine, Gilde, Kiwi, Rema 1000, Coop, First Price, Q, Synnøve) og norske porsjonsstørrelser. Svar ALLTID med kun rå JSON – ingen forklaring, ingen markdown.',
+   messages:[{role:'user',content:'Finn kalorier og protein for: "'+q+'".\n\nSvar med dette formatet:\n{"treff":[{"navn":"Kort navn","porsjon":"1 porsjon (150 g)","kcal":210,"protein":18.5}]}\n\nRegler:\n- 1 til 4 treff, mest sannsynlige først.\n- Hvis brukeren har oppgitt mengde, regn ut for akkurat den mengden og gi ett treff.\n- Hvis ikke, bruk vanlig norsk porsjonsstørrelse og skriv gram i "porsjon".\n- kcal og protein gjelder porsjonen som er beskrevet.\n- Kun tall i kcal og protein, ingen enheter.'}]})});
+ if(res.status===401)throw new Error('auth');
+ if(!res.ok)throw new Error('nett');
+ const data=await res.json();
+ const tekst=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+ const c=tekst.replace(/```json/g,'').replace(/```/g,'').trim();
+ const a=c.indexOf('{'),b=c.lastIndexOf('}');
+ if(a===-1||b===-1)throw new Error('format');
+ const p=JSON.parse(c.slice(a,b+1));
+ if(!p.treff||!p.treff.length)throw new Error('tomt');
+ return p.treff;}
+
+async function gjorSok(){
+ const q=document.getElementById('sok').value.trim();
+ if(!q)return;
+ laster=true;sokFeil='';treff=[];render();
+ try{treff=await sokMat(q);}
+ catch(err){
+  treff=[];
+  sokFeil=err.message==='nokkel'?'Legg inn API-nøkkelen din under Oppsett for å bruke søket. Uten nøkkel kan du fortsatt føre måltider manuelt.':
+   err.message==='auth'?'Nøkkelen ble avvist. Sjekk at den er riktig under Oppsett.':
+   err.message==='nett'?'Fikk ikke kontakt. Sjekk nettet og prøv igjen.':
+   'Fant ingen tall for dette. Prøv et mer presist navn, f.eks. «200 g kyllingfilet», eller legg det inn manuelt.';}
+ laster=false;render();
+ if(q)setTimeout(()=>{const el=document.getElementById('sok');if(el)el.value=q;},0);}
+
+/* ---------------- Handlinger ---------------- */
+function leggTil(e){state.entries.push({id:uid(),date:todayKey(),ts:Date.now(),...e});save();render();}
+function slett(id){state.entries=state.entries.filter(e=>e.id!==id);save();render();}
+function toggleOkt(n){state.sessions[n]=!state.sessions[n];save();render();}
+function settS(k,v){state.settings[k]=v;save();render();}
+function byttTab(t){tab=t;treff=[];sokFeil='';render();window.scrollTo(0,0);}
+function toggleUke(u){apen=(apen===u?0:u);render();}
+
+function leggTreff(i){
+ const t=treff[i];const el=document.getElementById('p'+i);
+ const m=Number(el&&el.value)||1;
+ leggTil({type:'mat',name:m===1?t.navn:t.navn+' ×'+m,kcal:round(t.kcal*m,0),protein:round(t.protein*m,1)});
+ toast('Lagt til');}
+
+function leggManuelt(){
+ const n=document.getElementById('mNavn').value.trim();
+ const k=document.getElementById('mKcal').value;
+ const p=document.getElementById('mProt').value;
+ if(!n||!k)return toast('Fyll inn navn og kcal');
+ leggTil({type:'mat',name:n,kcal:Number(k),protein:Number(p)||0});toast('Lagt til');}
+
+function leggOkt(){
+ const n=document.getElementById('oNavn').value.trim();
+ if(!n)return toast('Gi økten et navn');
+ leggTil({type:'okt',name:n,minutes:Number(document.getElementById('oMin').value)||0,
+  kcal:Number(document.getElementById('oKcal').value)||0,aq:Number(document.getElementById('oAq').value)||0});
+ toast('Økt lagret');}
+
+function leggVekt(){
+ const v=Number(document.getElementById('vInn').value);
+ if(!v)return toast('Skriv inn vekt');
+ state.weights=state.weights.filter(w=>w.date!==todayKey());
+ state.weights.push({date:todayKey(),kg:v});
+ state.weights.sort((a,b)=>a.date.localeCompare(b.date));
+ save();render();toast('Vekt lagret');}
+
+function eksporter(){
+ const blob=new Blob([JSON.stringify(state)],{type:'application/json'});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='vekt-backup-'+todayKey()+'.json';
+ a.click();toast('Backup lastet ned');}
+
+function importer(ev){
+ const f=ev.target.files[0];if(!f)return;
+ const r=new FileReader();
+ r.onload=()=>{try{const p=JSON.parse(r.result);
+  if(p.entries&&p.settings){state={...defaultState(),...p};save();render();toast('Gjenopprettet');}
+  else toast('Ugyldig fil');}catch(e){toast('Ugyldig fil');}};
+ r.readAsText(f);}
+
+function slettAlt(){
+ if(!confirm('Slette all logg? Dette kan ikke angres.'))return;
+ if(!confirm('Helt sikker?'))return;
+ state=defaultState();save();render();toast('Alt slettet');}
+
+/* ---------------- Visninger ---------------- */
+function gauge(spist,forbrent,maal){
+ const netto=spist-forbrent,pct=Math.max(0,Math.min(1,netto/maal)),over=netto>maal;
+ const overPct=over?Math.min(1,(netto-maal)/(maal*.35)):0,rest=maal-netto;
+ return `<div class="gauge"><div class="gauge-top"><div>
+  <div class="eyebrow">${over?'Over budsjett':'Igjen i dag'}</div>
+  <div class="big ${over?'big-over':''}">${over?'+':''}${Math.abs(Math.round(rest))}</div></div>
+  <div class="gauge-side">
+   <div class="side-row"><span>Spist</span><b>${Math.round(spist)}</b></div>
+   <div class="side-row"><span>Trening</span><b>−${Math.round(forbrent)}</b></div>
+   <div class="side-row side-sum"><span>Netto</span><b>${Math.round(netto)}</b></div></div></div>
+  <div class="track"><div class="track-main" style="width:${pct*74}%"></div>
+  ${over?`<div class="track-over" style="left:74%;width:${overPct*26}%"></div>`:''}
+  <div class="track-line" style="left:74%"></div></div>
+  <div class="track-labels"><span>0</span><span>${maal} kcal</span></div></div>`;}
+
+function visIDag(){
+ const dag=todayKey(),uke=finnAktivUke(state.sessions),data=hentUke(uke);
+ const iDag=state.entries.filter(e=>e.date===dag);
+ const spist=iDag.filter(e=>e.type==='mat').reduce((a,b)=>a+(b.kcal||0),0);
+ const protein=iDag.filter(e=>e.type==='mat').reduce((a,b)=>a+(b.protein||0),0);
+ const forbrent=iDag.filter(e=>e.type==='okt').reduce((a,b)=>a+(b.kcal||0),0);
+ const sisteVekt=state.weights.length?state.weights[state.weights.length-1].kg:state.settings.startWeight;
+ const auto=beregnMaal(state.settings,sisteVekt);
+ const kMaal=state.settings.autoTarget?auto.kcal:Number(state.settings.kcalTarget);
+ const pMaal=state.settings.autoTarget?auto.protein:Number(state.settings.proteinTarget);
+ const ukeStart=addDays(dag,-((new Date(dag+"T12:00:00").getDay()+6)%7));
+ const aqUke=state.entries.filter(e=>e.type==='okt'&&e.date>=ukeStart).reduce((a,b)=>a+(b.aq||0),0);
+ const gjort=[0,1,2].filter(i=>state.sessions['u'+uke+'-'+i]).length;
+
+ return `<header class="topp"><div><div class="eyebrow">${prettyDate(dag)}</div><h1>I dag</h1></div>
+  <div class="uke-merke">Uke ${uke}<span>av 16</span></div></header>
+ ${gauge(spist,forbrent,kMaal)}
+ <div class="pbar-wrap"><div class="pbar-head"><span class="eyebrow">Protein</span>
+  <span class="pbar-num"><b>${round(protein,0)}</b> / ${pMaal} g</span></div>
+  <div class="pbar"><div class="pbar-fill" style="width:${Math.min(100,protein/pMaal*100)}%"></div></div></div>
+
+ <div class="okt-kort"><div class="okt-head"><span class="eyebrow">${esc(data.tittel||'Trening denne uka')}</span>
+  <span class="okt-teller">${gjort}/3 økter</span></div>
+  <div class="okt-rad">${data.dager.map((d,i)=>{const n='u'+uke+'-'+i,p=!!state.sessions[n];
+   return `<button class="okt-brikke type-${d.type} ${p?'okt-gjort':''}" onclick="toggleOkt('${n}')">
+    <span class="okt-nr">${d.min} min · AQ ${d.aq}</span><span class="okt-t">${esc(d.navn)}</span></button>`;}).join('')}</div>
+  <div class="aq-linje"><span>AQ denne uka</span><div class="aq-track">
+   <div class="aq-fill" style="width:${Math.min(100,aqUke/state.settings.aqGoal*100)}%"></div></div>
+   <b>${Math.round(aqUke)}/${state.settings.aqGoal}</b></div></div>
+
+ <h2 class="seksjon">Ført i dag</h2>
+ ${iDag.length===0?'<div class="tom-boks">Ingenting ført ennå. Gå til «Legg til».</div>':
+  '<ul class="liste">'+iDag.slice().sort((a,b)=>b.ts-a.ts).map(e=>`<li class="post">
+   <div class="post-venstre"><span class="pil ${e.type==='okt'?'pil-ned':'pil-opp'}">${e.type==='okt'?'↓':'↑'}</span>
+   <div><div class="post-navn">${esc(e.name)}</div><div class="post-sub">${e.type==='okt'?
+    (e.minutes||0)+' min'+(e.aq?' · '+e.aq+' AQ':''):round(e.protein,1)+' g protein'}</div></div></div>
+   <div class="post-hoyre"><b>${e.type==='okt'?'−':''}${Math.round(e.kcal)}</b>
+   <button class="x" onclick="slett('${e.id}')">✕</button></div></li>`).join('')+'</ul>'}`;}
+
+function visLegg(){
+ const tell={};
+ state.entries.filter(e=>e.type==='mat').forEach(e=>{const k=e.name.toLowerCase();
+  if(!tell[k])tell[k]={navn:e.name,kcal:e.kcal,protein:e.protein,n:0};tell[k].n++;});
+ let fav=Object.values(tell).sort((a,b)=>b.n-a.n).filter(x=>x.n>=2).slice(0,6);
+ if(fav.length<3)fav=STANDARD_HURTIG;
+
+ return `<header class="topp"><div><div class="eyebrow">Registrer</div><h1>Legg til</h1></div></header>
+ <div class="sok-boks"><label class="eyebrow" for="sok">Søk opp mat</label>
+  <div class="sok-rad"><input id="sok" class="input" placeholder="f.eks. 2 brødskiver med brunost"
+   enterkeyhint="search" onkeydown="if(event.key==='Enter')gjorSok()">
+   <button class="knapp knapp-primar" onclick="gjorSok()" ${laster?'disabled':''}>${laster?'Søker…':'Søk'}</button></div>
+  <div class="hint">Skriv mengde hvis du vet den – da regnes tallene ut for akkurat den porsjonen.</div></div>
+ ${laster?'<div class="tom-boks">Slår opp næringsinnhold…</div>':''}
+ ${sokFeil?'<div class="feil">'+esc(sokFeil)+'</div>':''}
+ ${treff.map((t,i)=>`<div class="treff"><div class="treff-info">
+   <div class="treff-navn">${esc(t.navn)}</div><div class="treff-sub">${esc(t.porsjon||'')}</div>
+   <div class="treff-tall"><span><b>${Math.round(t.kcal)}</b> kcal</span><span><b>${round(t.protein,1)}</b> g protein</span></div></div>
+   <div class="treff-add"><input id="p${i}" class="input input-mini" type="number" inputmode="decimal" step="0.5" min="0.5" value="1">
+   <button class="knapp knapp-primar" onclick="leggTreff(${i})">Legg til</button></div></div>`).join('')}
+
+ <h2 class="seksjon">Hurtigvalg</h2>
+ <div class="hurtig">${fav.map(f=>`<button class="hurtig-knapp"
+   onclick='leggTil(${JSON.stringify({type:"mat",name:f.navn,kcal:f.kcal,protein:f.protein})});toast("Lagt til")'>
+   <span class="hurtig-navn">${esc(f.navn)}</span>
+   <span class="hurtig-tall">${f.kcal} kcal · ${round(f.protein,0)} g P</span></button>`).join('')}</div>
+ <div class="hint">Hurtigvalgene bytter seg selv ut med det du fører oftest.</div>
+
+ <h2 class="seksjon">Manuelt</h2>
+ <div class="kort"><input id="mNavn" class="input" placeholder="Hva spiste du?">
+  <div class="to"><input id="mKcal" class="input" type="number" inputmode="numeric" placeholder="kcal">
+  <input id="mProt" class="input" type="number" inputmode="decimal" placeholder="protein (g)"></div>
+  <button class="knapp knapp-blokk" onclick="leggManuelt()">Lagre måltid</button></div>
+
+ <h2 class="seksjon">Økt</h2>
+ <div class="kort"><input id="oNavn" class="input" placeholder="Hva gjorde du?">
+  <div class="tre"><input id="oMin" class="input" type="number" inputmode="numeric" placeholder="min">
+  <input id="oKcal" class="input" type="number" inputmode="numeric" placeholder="kcal">
+  <input id="oAq" class="input" type="number" inputmode="numeric" placeholder="AQ"></div>
+  <button class="knapp knapp-blokk" onclick="leggOkt()">Lagre økt</button>
+  <div class="hint">Kcal og AQ leser du av i MIA rett etter økten.</div></div>
+
+ <h2 class="seksjon">Vekt</h2>
+ <div class="kort"><div class="to"><input id="vInn" class="input" type="number" inputmode="decimal" step="0.1" placeholder="kg">
+  <button class="knapp knapp-primar" onclick="leggVekt()">Lagre</button></div>
+  <div class="hint">Samme tid hver morgen – etter toalett, før frokost.</div></div>`;}
+
+function visUke(){
+ const dag=todayKey(),s=state.settings;
+ const sisteVekt=state.weights.length?state.weights[state.weights.length-1].kg:s.startWeight;
+ const auto=beregnMaal(s,sisteVekt);
+ const kMaal=s.autoTarget?auto.kcal:Number(s.kcalTarget);
+ const dager=[];
+ for(let i=6;i>=0;i--){const k=addDays(dag,-i);const p=state.entries.filter(e=>e.date===k);
+  const inn=p.filter(e=>e.type==='mat').reduce((a,b)=>a+(b.kcal||0),0);
+  const ut=p.filter(e=>e.type==='okt').reduce((a,b)=>a+(b.kcal||0),0);
+  dager.push({l:DAGER[new Date(k+"T12:00:00").getDay()],v:Math.max(0,inn-ut),inn});}
+ const forte=dager.filter(d=>d.inn>0);
+ const snitt=forte.length?forte.reduce((a,b)=>a+b.v,0)/forte.length:0;
+ const maks=Math.max(kMaal*1.25,...dager.map(d=>d.v),1);
+
+ let graf='<div class="tom-boks">Logg vekt minst to ganger, så tegnes kurven her.</div>';
+ if(state.weights.length>=2){
+  const P=6,W=300,H=110,pts=state.weights;
+  const hi=Math.max(...pts.map(p=>p.kg),s.startWeight)+1, lo=Math.min(...pts.map(p=>p.kg),s.goalWeight)-1;
+  const x=i=>P+(i/(pts.length-1))*(W-P*2), y=v=>P+((hi-v)/(hi-lo))*(H-P*2);
+  const d=pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(p.kg).toFixed(1)).join(' ');
+  const siste=pts[pts.length-1].kg, endring=siste-pts[0].kg;
+  graf=`<div class="graf-head"><div><div class="eyebrow">Vekt nå</div>
+   <div class="graf-num">${round(siste,1)} kg</div></div>
+   <div class="delta ${endring<=0?'delta-ned':'delta-opp'}">${endring>0?'+':''}${round(endring,1)} kg</div></div>
+   <svg viewBox="0 0 ${W} ${H}" class="graf">
+   <line x1="${P}" x2="${W-P}" y1="${y(s.goalWeight)}" y2="${y(s.goalWeight)}" class="graf-maal"/>
+   <path d="${d}" class="graf-linje"/>
+   ${pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.kg)}" r="2.6" class="graf-prikk"/>`).join('')}</svg>
+   <div class="graf-fot"><span>Start ${round(s.startWeight,1)} kg</span><span>Mål ${round(s.goalWeight,1)} kg</span></div>`;}
+
+ return `<header class="topp"><div><div class="eyebrow">Siste 7 dager</div><h1>Uke</h1></div></header>
+ <div class="kort"><div class="eyebrow">Netto kcal per dag</div>
+  <div class="bars">${dager.map(d=>{const h=(d.v/maks)*100,over=d.v>kMaal;
+   return `<div class="bar-col"><div class="bar-slot">
+    <div class="bar ${over?'bar-over':''} ${d.v===0?'bar-tom':''}" style="height:${Math.max(d.v===0?2:4,h)}%"></div>
+    <div class="bar-goal" style="bottom:${kMaal/maks*100}%"></div></div>
+    <div class="bar-lbl">${d.l}</div><div class="bar-val">${d.v?Math.round(d.v):'–'}</div></div>`;}).join('')}</div></div>
+ <div class="stat-rad">
+  <div class="stat"><div class="eyebrow">Snitt</div><div class="stat-num">${Math.round(snitt)}</div><div class="stat-sub">kcal / dag</div></div>
+  <div class="stat"><div class="eyebrow">Mot mål</div>
+   <div class="stat-num ${snitt<=kMaal?'gronn':'rod'}">${snitt<=kMaal?'−':'+'}${Math.abs(Math.round(kMaal-snitt))}</div>
+   <div class="stat-sub">${forte.length} dager ført</div></div></div>
+ ${forte.length>=3?`<div class="notat">Med dette snittet ligger du an til omtrent
+   <b>${round((kMaal-snitt)*7/7700,1)} kg</b> vekttap i uka.</div>`:''}
+ <h2 class="seksjon">Vektkurve</h2><div class="kort">${graf}</div>`;}
+
+function visPlan(){
+ const naaUke=finnAktivUke(state.sessions);
+ const aapen=apen===-1?naaUke:apen;
+ const totalt=Object.values(state.sessions).filter(Boolean).length;
+
+ return `<header class="topp"><div><div class="eyebrow">16 ukers program</div><h1>Plan</h1></div>
+  <div class="uke-merke">${totalt}<span>av 48 økter</span></div></header>
+ <div class="notat">Uke 1–3 er lagt inn. Trykk på en uke for å se øktene og maskinvariantene.
+  Uka flytter seg til neste så snart alle tre øktene er huket av.</div>
+ <div class="ukeliste">${Array.from({length:16},(_,w)=>{
+  const uke=w+1,data=hentUke(uke);
+  const gjort=[0,1,2].filter(i=>state.sessions['u'+uke+'-'+i]).length;
+  const naa=uke===naaUke,fortid=uke<naaUke,er=aapen===uke;
+  return `<div class="ukerad ${naa?'ukerad-naa':''} ${fortid&&gjort<3?'ukerad-hull':''}">
+   <button class="ukerad-topp" onclick="toggleUke(${uke})">
+    <span class="ukerad-nr">Uke ${uke}</span>
+    <span class="ukerad-tittel">${esc(data.tittel||'Ikke lagt inn')}</span>
+    <span class="ukerad-status ${gjort===3?'ferdig':''}">${gjort}/3</span>
+    <span class="karet ${er?'karet-opp':''}">›</span></button>
+   ${er?`<div class="ukerad-innhold">${data.dager.map((d,i)=>{
+    const n='u'+uke+'-'+i,p=!!state.sessions[n];
+    return `<div class="dag type-${d.type}">
+     <button class="dag-topp ${p?'dag-gjort':''}" onclick="toggleOkt('${n}')">
+      <span class="hake">${p?'✓':''}</span>
+      <span class="dag-tekst"><b>Dag ${i+1} · ${esc(d.navn)}</b>
+      <span class="dag-tall"><span class="merke">${d.type}</span>${d.min} min · AQ ${d.aq}</span></span></button>
+     ${d.deler.length?'<ol class="deler">'+d.deler.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':''}
+     ${d.ovelser?'<div class="ovelser">'+d.ovelser.map(o=>`<div class="ovelse"><b>${esc(o)}</b>
+       ${MASKINER[o]?'<span class="maskin">→ '+esc(MASKINER[o].m)+'</span>':''}</div>`).join('')+'</div>':''}
+     </div>`;}).join('')}</div>`:''}</div>`;}).join('')}</div>
+
+ <h2 class="seksjon">Øvelser på treningssenter</h2>
+ <button class="knapp knapp-blokk" onclick="visMaskiner=!visMaskiner;render()">
+  ${visMaskiner?'Skjul maskinforslag':'Vis maskinforslag'}</button>
+ ${visMaskiner?'<div class="kort" style="margin-top:8px">'+Object.entries(MASKINER).map(([o,m])=>
+   `<div class="maskinrad"><div class="maskin-ovelse">${esc(o)}</div>
+    <div class="maskin-navn">${esc(m.m)}</div><div class="maskin-alt">${esc(m.alt)}</div></div>`).join('')+
+   '<div class="hint">Velg motstand der du klarer repetisjonene med to–tre igjen på tanken.</div></div>':''}`;}
+
+function visOppsett(){
+ const s=state.settings;
+ const sisteVekt=state.weights.length?state.weights[state.weights.length-1].kg:s.startWeight;
+ const auto=beregnMaal(s,sisteVekt);
+ return `<header class="topp"><div><div class="eyebrow">Innstillinger</div><h1>Oppsett</h1></div></header>
+
+ <h2 class="seksjon">Om deg</h2>
+ <div class="kort">
+  <div class="felt"><label>Kjønn</label><div class="valg">
+   ${['mann','kvinne'].map(k=>`<button class="valg-knapp ${s.sex===k?'valg-aktiv':''}"
+    onclick="settS('sex','${k}')">${k==='mann'?'Mann':'Kvinne'}</button>`).join('')}</div></div>
+  <div class="to">
+   <div class="felt"><label>Alder</label><input class="input" type="number" value="${s.age}" onchange="settS('age',Number(this.value))"></div>
+   <div class="felt"><label>Høyde (cm)</label><input class="input" type="number" value="${s.height}" onchange="settS('height',Number(this.value))"></div></div>
+  <div class="to">
+   <div class="felt"><label>Startvekt (kg)</label><input class="input" type="number" step="0.1" value="${s.startWeight}" onchange="settS('startWeight',Number(this.value))"></div>
+   <div class="felt"><label>Målvekt (kg)</label><input class="input" type="number" step="0.1" value="${s.goalWeight}" onchange="settS('goalWeight',Number(this.value))"></div></div>
+  <div class="felt"><label>Aktivitetsnivå ellers</label><div class="valg">
+   ${[[1.25,'Stillesittende'],[1.4,'Litt aktiv'],[1.55,'Aktiv']].map(([v,l])=>
+    `<button class="valg-knapp ${Number(s.activity)===v?'valg-aktiv':''}" onclick="settS('activity',${v})">${l}</button>`).join('')}</div></div>
+  <div class="hint">BMI ved ${round(sisteVekt,1)} kg: ${round(sisteVekt/Math.pow(s.height/100,2),1)}</div></div>
+
+ <h2 class="seksjon">Mål</h2>
+ <div class="kort">
+  <div class="regne">
+   <div class="regne-rad"><span>Hvilebehov (BMR)</span><b>${auto.bmr} kcal</b></div>
+   <div class="regne-rad"><span>Totalforbruk</span><b>${auto.tdee} kcal</b></div>
+   <div class="regne-rad regne-sum"><span>Anbefalt inntak</span><b>${auto.kcal} kcal</b></div></div>
+  <div class="felt"><label>Underskudd per dag</label><div class="valg">
+   ${[400,600,750].map(v=>`<button class="valg-knapp ${Number(s.deficit)===v?'valg-aktiv':''}"
+    onclick="settS('deficit',${v})">${v}</button>`).join('')}</div></div>
+  <label class="bryter"><input type="checkbox" ${s.autoTarget?'checked':''}
+   onchange="settS('autoTarget',this.checked)">
+   <span>Regn ut målet automatisk, og juster det etter hvert som vekten faller</span></label>
+  ${!s.autoTarget?`<div class="to">
+   <div class="felt"><label>Kcal-mål</label><input class="input" type="number" value="${s.kcalTarget}" onchange="settS('kcalTarget',Number(this.value))"></div>
+   <div class="felt"><label>Protein-mål (g)</label><input class="input" type="number" value="${s.proteinTarget}" onchange="settS('proteinTarget',Number(this.value))"></div></div>`:''}
+  <div class="felt"><label>AQ-mål per uke</label><input class="input" type="number" value="${s.aqGoal}" onchange="settS('aqGoal',Number(this.value))"></div></div>
+
+ <h2 class="seksjon">Matsøk</h2>
+ <div class="kort">
+  <div class="felt"><label>Anthropic API-nøkkel</label>
+   <input class="input" type="password" placeholder="sk-ant-..." value="${esc(s.apiKey||'')}"
+    onchange="settS('apiKey',this.value.trim())"></div>
+  <div class="hint">Nøkkelen lagres kun i denne nettleseren og sendes bare til Anthropic.
+   Ikke skriv den inn i selve HTML-fila før du legger den på GitHub – da blir den offentlig.
+   Uten nøkkel virker alt annet som normalt, du fører bare måltider manuelt.</div></div>
+
+ <h2 class="seksjon">Data</h2>
+ <div class="kort">
+  <div class="hint">Alt ligger i denne nettleseren. Eksporter jevnlig – bytter du telefon
+   eller tømmer nettleserdata, er loggen borte uten backup.</div>
+  <button class="knapp knapp-blokk" onclick="eksporter()">Last ned backup</button>
+  <label class="knapp knapp-blokk" style="display:block;text-align:center">Gjenopprett fra fil
+   <input type="file" accept="application/json" onchange="importer(event)" style="display:none"></label>
+  <button class="knapp knapp-fare" onclick="slettAlt()">Slett all data</button></div>
+
+ <div class="fotnote">Kaloritall fra søket er anslag, ikke laboratoriemålinger.
+  Bruk dem til å se retningen over tid.</div>`;}
+
+/* ---------------- Render ---------------- */
+const TABS=[['idag','I dag'],['legg','Legg til'],['uke','Uke'],['plan','Plan'],['opp','Oppsett']];
+
+function render(){
+ const v={idag:visIDag,legg:visLegg,uke:visUke,plan:visPlan,opp:visOppsett}[tab];
+ document.getElementById('skjerm').innerHTML=v();
+ document.getElementById('tabs').innerHTML=TABS.map(([k,l])=>
+  `<button class="tab ${tab===k?'tab-aktiv':''}" onclick="byttTab('${k}')">${l}</button>`).join('');}
+
+render();
+setInterval(()=>{if(tab==='idag')render();},60000);
+</script>
+</body>
+</html>
