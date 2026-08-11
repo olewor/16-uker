@@ -234,7 +234,7 @@ nav.tabs{
 const PROGRAM = [
  {uke:1,tittel:"Finn ditt utgangspunkt",dager:[
   {navn:"Testløype",min:"15–20",aq:"15–20",type:"kondis",deler:["5–10 min rolig oppvarming","10 min maksimal innsats – mål distansen","Noter meter i MIA"]},
-  {navn:"Funksjonelle styrketester",min:"5–10",aq:"0–5",type:"styrke",deler:["Armhevinger – maks reps","Planken – maks tid","Ryggplanken – maks tid"],ovelser:["Armhevinger","Planken","Ryggplanken"]},
+  {navn:"Funksjonelle styrketester",min:"5–10",aq:"0–5",type:"styrke",deler:["Armhevinger – maks reps (uke 1: 10)","Planken – maks tid (uke 1: 60 sek)","Ryggplanken – maks tid (uke 1: 45 sek)","90-graderen – maks tid (uke 1: 90 sek)","Sit-ups – maks reps (uke 1: 10)"],ovelser:["Armhevinger","Planken","Ryggplanken","90-graderen","Sit-ups"]},
   {navn:"Puls og kroppsmål",min:"40–50",aq:"40–50",type:"test",deler:["Finn hvilepuls (dagtid)","Makspulstest – tre drag, siste til utmattelse","BMI og midjemål"]}]},
  {uke:2,tittel:"Bli kjent med intervalltrening",dager:[
   {navn:"Første 4-minutters drag",min:"24",aq:"10–15",type:"kondis",deler:["15 min oppvarming","4 min høy innsats – 85–90 % av makspuls","10 min nedtrapping"]},
@@ -243,7 +243,55 @@ const PROGRAM = [
  {uke:3,tittel:"Vi trapper opp",dager:[
   {navn:"To intervalldrag",min:"31",aq:"20–30",type:"kondis",deler:["10 min oppvarming","4 min høy innsats","3 min aktiv pause","4 min høy innsats","10 min nedtrapping"]},
   {navn:"Tre intervalldrag",min:"33",aq:"30–40",type:"kondis",deler:["10 min oppvarming","4 min høy innsats","3 min aktiv pause","4 min høy innsats","3 min aktiv pause","4 min høy innsats","5 min nedtrapping"]},
-  {navn:"Kjernestyrkeprogram",min:"15–20",aq:"5–10",type:"styrke",deler:["10 min oppvarming til du svetter","10 reps av hver øvelse, 20 sek pause mellom"],ovelser:["Utfall","Spensthopp","Planken","Fuglehunden","Skrå sit-ups","Dips"]}]}
+  {navn:"Kjernestyrkeprogram",min:"15–20",aq:"5–10",type:"styrke",deler:["10 min oppvarming til du svetter","10 reps av hver øvelse, 20 sek pause mellom"],ovelser:["Utfall","Spensthopp","Planken","Fuglehunden","Skrå sit-ups","Dips"]}]},
+ {uke:4,tittel:"Ei roligere uke",dager:[
+  {navn:"Tre intervalldrag",min:"33",aq:"30–40",type:"kondis",deler:["10 min oppvarming","3 × (4 min høy innsats + 3 min aktiv pause)","5 min nedtrapping","Nær 95 % av makspuls mot slutten av siste drag"]},
+  {navn:"Lang, moderat økt",min:"60+",aq:"20–65",type:"kondis",deler:["Fri aktivitet med store muskelgrupper","Over 60 min i moderat pulssone","Gjerne noe du ikke pleier å gjøre"]},
+  {navn:"Intervall + kjernestyrke",min:"40–50",aq:"15–30",type:"styrke",deler:["15 min oppvarming","4 min høy innsats (85–90 %)","10 min nedtrapping","Kjernestyrkeprogram"],ovelser:["Planken","Sideplanken","Ryggplanken","Armhevinger","Knebøy"]}]},
+ {uke:5,tittel:"100 AQ-uke",dager:[
+  {navn:"4×4-intervaller",min:"40",aq:"50–65",type:"kondis",deler:["10 min oppvarming","4 × (4 min høy innsats + 3 min aktiv pause)","85–95 % av makspuls på de siste dragene","5 min rolig gange"]},
+  {navn:"4×4 + styrke",min:"60",aq:"50–65",type:"styrke",deler:["Minst én hviledag siden dag 1","Samme 4×4-økt som forrige gang","Deretter styrkeøvelsene"],ovelser:["Planken","Fuglehunden","Skrå sit-ups","Dips"]},
+  {navn:"Ett drag + kjernestyrke",min:"40–50",aq:"15–25",type:"styrke",deler:["15 min oppvarming (ca. 70 % av makspuls)","4 min høy innsats – kun ett drag","10 min rolig nedtrapping","Kjernestyrke, 30 sek pause mellom øvelsene","Runde to av øvelse 1–4"],ovelser:["Knebøy","Utfall","Spensthopp","Armhevinger","Sit-ups","Fuglehunden"]}]},
+ {uke:6,tittel:"Styrkefokus",dager:[
+  {navn:"Rolig økt + kjernestyrke",min:"40",aq:"10–20",type:"styrke",deler:["10 min oppvarming","20 min jevnt, litt hardere","Tre øvelser × tre runder, 30 sek pause"],ovelser:["Armhevinger","Knebøy","Planken"]},
+  {navn:"Sosial økt med en venn",min:"60",aq:"5–20",type:"kondis",deler:["Utfordre en venn til å bli med","Store muskelgrupper, opp med pulsen","Rolig nok til å prate hele veien","Ca. en time"]},
+  {navn:"Kjernestyrke, lang økt",min:"30–40",aq:"5–10",type:"styrke",deler:["20 min oppvarming til du er svett","Kjernestyrkeprogram"],ovelser:["Planken","Sideplanken","Ryggplanken","Armhevinger","Knebøy","Liften","Utfall"]}]},
+ {uke:7,tittel:"Vi kjører på",dager:[
+  {navn:"4×4-intervaller",min:"40",aq:"50–65",type:"kondis",deler:["10 min oppvarming","4 × (4 min høy innsats + 3 min aktiv pause)","Over 90 % av makspuls i dragene","5 min rolig gange"]},
+  {navn:"Rolig økt + kjernestyrke",min:"60",aq:"10–20",type:"styrke",deler:["10 min oppvarming i behagelig tempo","20 min jevnt, litt hardere enn oppvarming","Kjernestyrkeprogram"],ovelser:["Armhevinger","Knebøy","Spensthopp","Sit-ups","Fuglehunden","Planken","Sideplanken"]},
+  {navn:"4×4 + styrke",min:"60–70",aq:"50–65",type:"styrke",deler:["10 min oppvarming","4 × (4 min høy innsats + 3 min aktiv pause)","85–95 % av makspuls i dragene","Deretter kjernestyrke"],ovelser:["Armhevinger","Planken","Sideplanken","Ryggplanken","Utfall","Supermann"]}]},
+ {uke:8,tittel:"Restitusjonsuke",dager:[
+  {navn:"4×4-intervaller",min:"40",aq:"50–65",type:"kondis",deler:["Varm godt opp","4 intensive drag med aktiv pause mellom","Du skal ikke være utmattet – du skulle klart et femte drag","NB: skaff treningsstrikk før uke 10"]},
+  {navn:"Lang, moderat økt",min:"60+",aq:"20–65",type:"kondis",deler:["Fri aktivitet med store muskelgrupper","Over 60 min i moderat pulssone","Gjerne noe du ikke pleier å gjøre"]},
+  {navn:"Kjernestyrke",min:"20–30",aq:"1–10",type:"styrke",deler:["10 min oppvarming med dynamiske bevegelser","Kjernestyrkeprogram"],ovelser:["Planken","Sideplanken","Ryggplanken","Armhevinger","Knebøy","Liften","Utfall"]}]},
+ {uke:9,tittel:"En ny type intervaller",dager:[
+  {navn:"4×4 + 1-minutters drag",min:"60",aq:"50–65",type:"styrke",deler:["10 min oppvarming (ca. 70 % av makspuls)","4 min høy innsats + 3 min aktiv pause","3 × 1 min så raskt du klarer, 1 min rolig mellom","3 min aktiv pause","4 min høy innsats + 3 min aktiv pause","3 × 1 min drag til","5 min nedtrapping","Deretter kjernestyrke"],ovelser:["Planken","Sideplanken","Ryggplanken","Armhevinger"]},
+  {navn:"Sosial økt med en venn",min:"60+",aq:"10–30",type:"kondis",deler:["Utfordre en venn","Store muskelgrupper, opp med pulsen","Rolig nok til å prate hele veien","Minst én time"]},
+  {navn:"To intervalldrag",min:"35",aq:"20–30",type:"kondis",deler:["10 min oppvarming","4 min høy innsats (85–90 %)","3 min aktiv pause","4 min høy innsats (85–95 %)","10 min nedtrapping"]}]},
+ {uke:10,tittel:"Sterk og stabil",dager:[
+  {navn:"4×4 + stort styrkeprogram",min:"60–75",aq:"50–65",type:"styrke",deler:["10 min oppvarming","4 min høy innsats + 3 min aktiv pause","4 min høy innsats","10 min nedtrapping","Styrke: 2–3 serier, 2 min mellom seriene, 30 sek mellom øvelsene","Strikk trengs fra i dag"],ovelser:["Tåhev","Markløft med strikk","Sidehev med strikk","Albueløft med strikk","Skulderpress med strikk","Seteløft","Dips","Planken","Ryggplanken","Omvendt roing","Liften","Rotasjon med strikk","Sideplanken","Armhevinger","Fuglehunden"]},
+  {navn:"Sosial økt med venner",min:"60",aq:"10–30",type:"kondis",deler:["Inviter noen med","Store muskelgrupper og dynamiske bevegelser","Over 60 min","Lav nok intensitet til at dere kan prate"]},
+  {navn:"Rolig økt + kjernestyrke",min:"35",aq:"10–20",type:"styrke",deler:["10 min oppvarming i behagelig tempo","20 min jevnt, litt hardere","Kjernestyrkeprogram"],ovelser:["Armhevinger","Knebøy","Spensthopp"]}]},
+ {uke:11,tittel:"Kondisjonsbooster",dager:[
+  {navn:"17/13-intervaller + styrke",min:"40",aq:"15–25",type:"styrke",deler:["10 min oppvarming","5 min: 10 × (17 sek hardt + 13 sek rolig)","3 min aktiv pause","5 min: 10 × 17/13 igjen","5 min nedtrapping","Fra 6. drag: 85–90 % av makspuls","Tips: bratt motbakke opp, gå/jogg ned i pausene","Styrke: 2–3 serier, 2 min mellom seriene"],ovelser:["Sit-ups","Markløft med strikk","Supermann","Liften","Seteløft","Sidehev med strikk","Albueløft med strikk","Skulderpress med strikk","Skulderrotasjon med strikk"]},
+  {navn:"Sosial økt med en venn",min:"60+",aq:"10–30",type:"kondis",deler:["Vennen velger aktivitet","Store muskelgrupper og dynamiske bevegelser","Over en time","Rolig nok til å prate"]},
+  {navn:"4×4-intervaller",min:"40",aq:"50–65",type:"kondis",deler:["10 min oppvarming","4 × (4 min høy innsats + 3 min aktiv pause)","Over 90 % av makspuls i dragene","5 min lett aktivitet"]}]},
+ {uke:12,tittel:"Svette og avslapning",dager:[
+  {navn:"10 × 1-minutters intervaller",min:"35",aq:"25–40",type:"kondis",deler:["10 min oppvarming","1 min så raskt du klarer – jevnt tempo hele minuttet","1 min aktiv pause","Gjenta til 10 drag totalt","5 min nedtrapping","Mål: ca. 90 % av makspuls halvveis i økta"]},
+  {navn:"Sosial økt med en venn",min:"60+",aq:"10–30",type:"kondis",deler:["Vennen velger aktivitet","Over en time","Rolig nok til å prate"]},
+  {navn:"Rolig økt + kjernestyrke",min:"35",aq:"20–30",type:"styrke",deler:["10 min oppvarming i behagelig tempo","20 min jevnt, litt hardere","Styrke: 2–3 serier, 2 min mellom seriene, 30 sek mellom øvelsene"],ovelser:["Sit-ups","Fuglehunden","Stående roing med strikk","Sidehev med strikk","Albueløft med strikk","Skulderpress med strikk","Skulderrotasjon med strikk","Markløft med strikk"]}]},
+ {uke:13,tittel:"Kort og effektivt",dager:[
+  {navn:"Blandingsintervaller + styrke",min:"40",aq:"50–65",type:"styrke",deler:["10 min oppvarming – snakkefart, ca. 70 % av makspuls","4 min høy innsats (85–90 % mot slutten)","3 min aktiv pause","1 min så raskt du klarer – hold innsatsen hele minuttet","1 min aktiv pause","2 × 1-minuttersdrag med 1 min aktiv pause mellom","3 min aktiv pause","4 min høy innsats (85–95 % siste halvdel)","3 min aktiv pause","3 × 1-minuttersdrag etter samme oppskrift","5 min nedtrapping","Deretter rask styrkeøkt"],ovelser:["Planken","Sideplanken","Ryggplanken","Tåhev","Markløft med strikk","Rotasjon med strikk"]},
+  {navn:"Sosial økt med venner",min:"60",aq:"10–30",type:"kondis",deler:["Inviter noen med","Store muskelgrupper og dynamiske bevegelser","Over 60 min","Lav nok intensitet til at dere kan prate","Gjerne noe du vanligvis ikke gjør"]},
+  {navn:"10 × 1-minutters intervaller",min:"35",aq:"25–40",type:"kondis",deler:["10 min oppvarming","1 min så raskt du klarer – jevnt tempo hele minuttet","1 min aktiv pause","Gjenta til 10 drag totalt","5 min nedtrapping"]}]},
+ {uke:15,tittel:"Mål i sikte",dager:[
+  {navn:"17/13-intervaller + kjernestyrke",min:"50",aq:"15–25",type:"styrke",deler:["10 min oppvarming – svett uten å bli sliten","5 min: 10 × (17 sek hardt + 13 sek rolig)","Fra 6. drag: 85–90 % av makspuls","Tips: bratt motbakke opp, gå/jogg ned i pausene","3 min aktiv pause – ikke stopp helt","5 min: 10 nye 17/13-drag","5 min nedtrapping","Deretter kjernestyrke"],ovelser:["Planken","Sideplanken","Ryggplanken","Armhevinger","Markløft med strikk","Fuglehunden"]},
+  {navn:"Sosial økt med venner",min:"60",aq:"10–30",type:"kondis",deler:["Inviter noen med","Store muskelgrupper og dynamiske bevegelser","Over 60 min","Lav nok intensitet til at dere kan prate","Gjerne noe du vanligvis ikke gjør"]},
+  {navn:"4×4-intervaller",min:"40",aq:"50–65",type:"kondis",deler:["Varm godt opp","4 intensive drag med aktiv pause mellom","Ikke utmattet etter hvert drag – du skulle klart et femte"]}]},
+ {uke:16,tittel:"Ungdomskilden",dager:[
+  {navn:"Testløype på nytt",min:"15–20",aq:"15–20",type:"kondis",deler:["Finn tilbake til testløypa fra uke 1","5–10 min rolig oppvarming","10 min maksimal innsats – mål distansen","Uke 1: 1750 meter","Legg resultatet inn i MIA"]},
+  {navn:"Funksjonelle styrketester",min:"5–10",aq:"0–5",type:"styrke",deler:["Armhevinger – maks reps (uke 1: 10)","Planken – maks tid (uke 1: 60 sek)","Ryggplanken – maks tid (uke 1: 45 sek)","90-graderen – maks tid (uke 1: 90 sek)","Sit-ups – maks reps (uke 1: 10)"],ovelser:["Armhevinger","Planken","Ryggplanken","90-graderen","Sit-ups"]},
+  {navn:"Valgfri økt + kroppsmål",min:"40–50",aq:"0–65",type:"test",deler:["Velg en økt du likte tidligere i programmet","Finn hvilepulsen: sitt helt i ro i fem minutter, les av på klokka","BMI: uke 1 var 36,8","Midjemål ved navlen etter normalt utpust – uke 1 var 117 cm","Siste økt i programmet"]}]}
 ];
 
 const MASKINER = {
@@ -256,7 +304,21 @@ const MASKINER = {
  "Ryggplanken":{m:"Ryggekstensjon på romerstol (45°)",alt:"Lettest å dosere av alle byttene"},
  "Fuglehunden":{m:"Ryggekstensjon på romerstol (45°)",alt:"Lav vekt, høye reps"},
  "Dips":{m:"Dipsmaskin med motvekt",alt:"Triceps pushdown i kabel"},
- "Planken":{m:"Behold som den er",alt:"Ingen maskin gjør jobben bedre"}
+ "Planken":{m:"Behold som den er",alt:"Ingen maskin gjør jobben bedre"},
+ "Sideplanken":{m:"Behold som den er",alt:"Evt. sidebøy i kabel eller med manual"},
+ "90-graderen":{m:"Behold som den er – sitt mot vegg med 90° i knær og hofte",alt:"Dette er en test. Gjør den likt som i uke 1 så tallene kan sammenlignes"},
+ "Liften":{m:"Hofteabduksjon i kabel eller maskin",alt:"Setemaskin. Behold gulvøvelsen hvis du trener hjemme"},
+ "Supermann":{m:"Ryggekstensjon på romerstol (45°)",alt:"Samme muskler, lettere å dosere. Behold gulvvarianten hjemme"},
+ "Tåhev":{m:"Tåhevmaskin (stående eller sittende)",alt:"Smith-maskin med tærne på en vektskive"},
+ "Markløft med strikk":{m:"Markløft med stang eller manualer",alt:"Rumensk markløft i Smith. Start lett – teknikk før vekt"},
+ "Sidehev med strikk":{m:"Sidehevmaskin",alt:"Manualer, 4–8 kg. Kabel gir jevnere motstand"},
+ "Albueløft med strikk":{m:"Stangroing i kabel (upright row)",alt:"Manualer. Stopp ved skulderhøyde"},
+ "Skulderpress med strikk":{m:"Skulderpressmaskin",alt:"Manualer sittende med ryggstøtte"},
+ "Seteløft":{m:"Hip thrust med stang eller i maskin",alt:"Setemaskin. Klart bedre belastning enn gulvvarianten"},
+ "Omvendt roing":{m:"Nedtrekk eller sittende roing i kabel",alt:"Assistert pull-up-maskin"},
+ "Rotasjon med strikk":{m:"Kabelrotasjon stående (woodchop)",alt:"Rotasjonsmaskin"},
+ "Skulderrotasjon med strikk":{m:"Utoverrotasjon i kabel, albuen inntil siden",alt:"Manual liggende på siden. Lett vekt – dette er rotatorcuffen"},
+ "Stående roing med strikk":{m:"Sittende roing i kabel",alt:"Manualroing framoverbøyd, eller roingsmaskin med brystpute"}
 };
 
 const STANDARD_HURTIG=[
@@ -555,7 +617,7 @@ function visPlan(){
 
  return `<header class="topp"><div><div class="eyebrow">16 ukers program</div><h1>Plan</h1></div>
   <div class="uke-merke">${totalt}<span>av 48 økter</span></div></header>
- <div class="notat">Uke 1–3 er lagt inn. Trykk på en uke for å se øktene og maskinvariantene.
+ <div class="notat">Alle uker unntatt uke 14 er lagt inn. Trykk på en uke for å se øktene og maskinvariantene.
   Uka flytter seg til neste så snart alle tre øktene er huket av.</div>
  <div class="ukeliste">${Array.from({length:16},(_,w)=>{
   const uke=w+1,data=hentUke(uke);
