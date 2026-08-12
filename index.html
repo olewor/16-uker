@@ -284,6 +284,10 @@ const PROGRAM = [
   {navn:"Blandingsintervaller + styrke",min:"40",aq:"50–65",type:"styrke",deler:["10 min oppvarming – snakkefart, ca. 70 % av makspuls","4 min høy innsats (85–90 % mot slutten)","3 min aktiv pause","1 min så raskt du klarer – hold innsatsen hele minuttet","1 min aktiv pause","2 × 1-minuttersdrag med 1 min aktiv pause mellom","3 min aktiv pause","4 min høy innsats (85–95 % siste halvdel)","3 min aktiv pause","3 × 1-minuttersdrag etter samme oppskrift","5 min nedtrapping","Deretter rask styrkeøkt"],ovelser:["Planken","Sideplanken","Ryggplanken","Tåhev","Markløft med strikk","Rotasjon med strikk"]},
   {navn:"Sosial økt med venner",min:"60",aq:"10–30",type:"kondis",deler:["Inviter noen med","Store muskelgrupper og dynamiske bevegelser","Over 60 min","Lav nok intensitet til at dere kan prate","Gjerne noe du vanligvis ikke gjør"]},
   {navn:"10 × 1-minutters intervaller",min:"35",aq:"25–40",type:"kondis",deler:["10 min oppvarming","1 min så raskt du klarer – jevnt tempo hele minuttet","1 min aktiv pause","Gjenta til 10 drag totalt","5 min nedtrapping"]}]},
+ {uke:14,tittel:"Gi gass på oppløpssiden",dager:[
+  {navn:"4×4 + stort styrkeprogram",min:"40",aq:"50–65",type:"styrke",deler:["10 min oppvarming","4 × (4 min høy innsats + 3 min aktiv pause)","Over 90 % av makspuls i dragene","5 min lett aktivitet","Styrke: 2–3 serier, 2 min mellom seriene, 30 sek mellom øvelsene"],ovelser:["Tåhev","Markløft med strikk","Sidehev med strikk","Albueløft med strikk","Skulderpress med strikk","Skulderrotasjon med strikk","Utfall","Seteløft","Dips","Omvendt roing","Liften","Skrå sit-ups","Stående roing med strikk","Flyes med strikk"]},
+  {navn:"Sosial økt med venner",min:"60",aq:"10–30",type:"kondis",deler:["Inviter noen med","Store muskelgrupper og dynamiske bevegelser","Over 60 min","Lav nok intensitet til at dere kan prate"]},
+  {navn:"Rolig økt + kjernestyrke",min:"40",aq:"10–20",type:"styrke",deler:["10 min oppvarming i behagelig tempo","20 min jevnt, litt hardere","Fem øvelser, 30 sek pause mellom","Gjenta hele programmet tre ganger"],ovelser:["Armhevinger","Knebøy","Spensthopp","Supermann","Flyes med strikk"]}]},
  {uke:15,tittel:"Mål i sikte",dager:[
   {navn:"17/13-intervaller + kjernestyrke",min:"50",aq:"15–25",type:"styrke",deler:["10 min oppvarming – svett uten å bli sliten","5 min: 10 × (17 sek hardt + 13 sek rolig)","Fra 6. drag: 85–90 % av makspuls","Tips: bratt motbakke opp, gå/jogg ned i pausene","3 min aktiv pause – ikke stopp helt","5 min: 10 nye 17/13-drag","5 min nedtrapping","Deretter kjernestyrke"],ovelser:["Planken","Sideplanken","Ryggplanken","Armhevinger","Markløft med strikk","Fuglehunden"]},
   {navn:"Sosial økt med venner",min:"60",aq:"10–30",type:"kondis",deler:["Inviter noen med","Store muskelgrupper og dynamiske bevegelser","Over 60 min","Lav nok intensitet til at dere kan prate","Gjerne noe du vanligvis ikke gjør"]},
@@ -305,8 +309,8 @@ const MASKINER = {
  "Fuglehunden":{m:"Ryggekstensjon på romerstol (45°)",alt:"Lav vekt, høye reps"},
  "Dips":{m:"Dipsmaskin med motvekt",alt:"Triceps pushdown i kabel"},
  "Planken":{m:"Behold som den er",alt:"Ingen maskin gjør jobben bedre"},
- "Sideplanken":{m:"Behold som den er",alt:"Evt. sidebøy i kabel eller med manual"},
  "90-graderen":{m:"Behold som den er – sitt mot vegg med 90° i knær og hofte",alt:"Dette er en test. Gjør den likt som i uke 1 så tallene kan sammenlignes"},
+ "Sideplanken":{m:"Behold som den er",alt:"Evt. sidebøy i kabel eller med manual"},
  "Liften":{m:"Hofteabduksjon i kabel eller maskin",alt:"Setemaskin. Behold gulvøvelsen hvis du trener hjemme"},
  "Supermann":{m:"Ryggekstensjon på romerstol (45°)",alt:"Samme muskler, lettere å dosere. Behold gulvvarianten hjemme"},
  "Tåhev":{m:"Tåhevmaskin (stående eller sittende)",alt:"Smith-maskin med tærne på en vektskive"},
@@ -318,7 +322,8 @@ const MASKINER = {
  "Omvendt roing":{m:"Nedtrekk eller sittende roing i kabel",alt:"Assistert pull-up-maskin"},
  "Rotasjon med strikk":{m:"Kabelrotasjon stående (woodchop)",alt:"Rotasjonsmaskin"},
  "Skulderrotasjon med strikk":{m:"Utoverrotasjon i kabel, albuen inntil siden",alt:"Manual liggende på siden. Lett vekt – dette er rotatorcuffen"},
- "Stående roing med strikk":{m:"Sittende roing i kabel",alt:"Manualroing framoverbøyd, eller roingsmaskin med brystpute"}
+ "Stående roing med strikk":{m:"Sittende roing i kabel",alt:"Manualroing framoverbøyd, eller roingsmaskin med brystpute"},
+ "Flyes med strikk":{m:"Pec deck / flymaskin",alt:"Kabelcrossover, eller flyes med manualer på benk"}
 };
 
 const STANDARD_HURTIG=[
@@ -617,7 +622,7 @@ function visPlan(){
 
  return `<header class="topp"><div><div class="eyebrow">16 ukers program</div><h1>Plan</h1></div>
   <div class="uke-merke">${totalt}<span>av 48 økter</span></div></header>
- <div class="notat">Alle uker unntatt uke 14 er lagt inn. Trykk på en uke for å se øktene og maskinvariantene.
+ <div class="notat">Hele programmet er lagt inn. Trykk på en uke for å se øktene og maskinvariantene.
   Uka flytter seg til neste så snart alle tre øktene er huket av.</div>
  <div class="ukeliste">${Array.from({length:16},(_,w)=>{
   const uke=w+1,data=hentUke(uke);
