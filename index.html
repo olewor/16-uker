@@ -208,6 +208,41 @@ ul.liste{list-style:none;margin:0;padding:0;}
 .maskin-ovelse{font-size:13.5px;font-weight:600;}
 .maskin-navn{font-size:12.5px;color:var(--pine);margin-top:2px;}
 .maskin-alt{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45;}
+/* 8-ukers økter */
+.ukevalg{display:flex;gap:4px;margin-top:4px;}
+.ukevalg .valg-knapp{padding:9px 0;font-family:var(--font-m);position:relative;}
+.ukevalg .valg-ferdig{color:var(--pine);border-color:var(--pine);background:var(--pine-lys);}
+.ukevalg .valg-aktiv{background:var(--ink);border-color:var(--ink);color:#fff;}
+.uke8-tittel{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 2px;}
+.uke8-tittel b{font-size:17px;}
+.o8{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--okse);border-radius:3px;margin-top:9px;}
+.o8.type-kondis{border-left-color:var(--viol);}
+.o8.type-valgfri{border-left-color:var(--hav);}
+.o8-topp{display:flex;gap:11px;align-items:center;width:100%;background:none;border:none;text-align:left;padding:13px 13px;}
+.o8-gjort .hake{background:var(--pine);border-color:var(--pine);color:#fff;}
+.o8-navn{display:block;font-size:14px;font-weight:600;line-height:1.3;}
+.o8-sub{display:block;font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:3px;}
+.o8-innhold{padding:0 13px 14px;display:flex;flex-direction:column;gap:14px;}
+.o8-del{border-top:1px solid var(--line);padding-top:11px;}
+.o8-del h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600;}
+.ovelse8{margin-top:10px;}
+.ovelse8:first-of-type{margin-top:0;}
+.ovelse8-navn{font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.maal8{flex-shrink:0;font-family:var(--font-m);font-size:11px;font-weight:600;color:var(--okse);background:var(--okse-lys);padding:2px 7px;border-radius:2px;white-space:nowrap;}
+.forrige{font-family:var(--font-m);font-size:10.5px;color:var(--muted);margin-top:2px;}
+.sett-rad{display:grid;grid-template-columns:30px minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;margin-top:5px;}
+.sett-rad.tre-felt{grid-template-columns:30px repeat(3,minmax(0,1fr));}
+.sett-nr{font-family:var(--font-m);font-size:11px;color:var(--muted);text-align:center;}
+.sett-hode{font-family:var(--font-m);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.inp8{padding:9px 10px;font-family:var(--font-m);font-size:15px;text-align:center;min-width:0;}
+.felt-rad{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;}
+.sirkel-rad{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:8px;align-items:center;margin-top:6px;font-size:13px;}
+.sirkel-rad small{display:block;font-family:var(--font-m);font-size:10px;color:var(--muted);}
+.o8-knapper{display:flex;gap:7px;}
+.o8-knapper .knapp{flex:1;}
+.fremgang-rad{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--line);}
+.fremgang-rad:last-child{border-bottom:none;}
+.fremgang-rad b{font-family:var(--font-m);font-weight:500;white-space:nowrap;}
 .fotnote{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:22px;padding-top:14px;border-top:1px solid var(--line);}
 
 nav.tabs{
@@ -331,6 +366,25 @@ const STANDARD_HURTIG=[
  {navn:"Kyllingfilet 200 g",kcal:330,protein:62},{navn:"Skyr 350 g",kcal:220,protein:38},
  {navn:"Brødskive m/ pålegg",kcal:180,protein:8},{navn:"Proteinshake",kcal:130,protein:27}];
 
+/* ---------------- 8-ukers plan: kondisjon + styrke ---------------- */
+const OVELSER8={
+ kneboy:"Knebøy",benk:"Benkpress",nedtrekk:"Nedtrekk eller sittende roing",
+ mark:"Markløft (eller hip thrust)",skulder:"Skulderpress med manualer",utfallC:"Utfall eller bulgarske utfall",roing:"Roing med manual"};
+const STYRKE8={A:["kneboy","benk","nedtrekk"],C:["mark","skulder","utfallC","roing"]};
+const SIRKEL8={
+ tidlig:[["kb","Kettlebell-sving","kg"],["utfallB","Utfall","kg"],["armhev","Armhevinger","reps"],["romaskin","Romaskin","meter"],["planke","Planke","sek"]],
+ sen:[["stepup","Box step-ups","kg"],["goblet","Goblet squat","kg"],["thruster","Thrusters med manualer","kg"],["airbike","Airbike","kcal"],["climber","Mountain climbers","reps"]]};
+const UKER8=[
+ {uke:1,t:"Tilbake i gang",A:{sett:2,reps:8,merk:"Lett, ca. 70 %",drag:3},B:{runder:3,arb:40,hvile:20},C:{sett:2,reps:10,min:"20"},D:null},
+ {uke:2,t:"Bygg opp",A:{sett:3,reps:8,drag:4},B:{runder:4,arb:40,hvile:20},C:{sett:3,reps:10,min:"25"},D:null},
+ {uke:3,t:"Øk vekt",A:{sett:3,reps:8,merk:"+2,5–5 kg fra uke 2",drag:4},B:{runder:4,arb:45,hvile:15},C:{sett:3,reps:10,merk:"+vekt",min:"30"},D:{type:"min1",drag:8}},
+ {uke:4,t:"Lett uke",A:{sett:2,reps:8,merk:"Samme vekt som uke 3",drag:3},B:{runder:3,arb:40,hvile:20},C:{sett:2,reps:10,min:"30"},D:{type:"tur"}},
+ {uke:5,t:"Tyngre",A:{sett:4,reps:6,merk:"Tyngre vekt",drag:4},B:{runder:5,arb:40,hvile:20,nye:true},C:{sett:3,reps:8,min:"35"},D:{type:"min1",drag:10}},
+ {uke:6,t:"Tyngre",A:{sett:4,reps:6,merk:"+vekt",drag:4,dragMerk:"Litt høyere fart enn uke 5"},B:{runder:5,arb:45,hvile:15,nye:true},C:{sett:3,reps:8,merk:"+vekt",min:"35–40"},D:{type:"min1",drag:10}},
+ {uke:7,t:"Toppuke",A:{sett:4,reps:5,merk:"Tyngste uke",drag:4,dragMerk:"Høyere fart eller stigning"},B:{runder:5,arb:45,hvile:15,nye:true},C:{sett:3,reps:8,min:"40"},D:{type:"min1",drag:10}},
+ {uke:8,t:"Test",A:{sett:0,drag:4,dragMerk:"Test: høyest mulig snittfart – sammenlign med uke 2"},B:{runder:4,arb:40,hvile:20,nye:true},C:{sett:2,reps:8,merk:"Lett",min:"30"},D:{type:"test3k"}}];
+const OKTNAVN8={A:"Økt A · Styrke + 4x4",B:"Økt B · Sirkeltrening",C:"Økt C · Styrke + rolig kondis",D:"Økt 4 · Valgfri"};
+
 /* ---------------- Hjelpere ---------------- */
 const KEY='vekt-tracker-v3';
 const DAGER=["Søn","Man","Tir","Ons","Tor","Fre","Lør"];
@@ -352,7 +406,7 @@ const finnAktivUke=s=>{for(let u=1;u<=16;u++){if(![0,1,2].every(i=>s["u"+u+"-"+i
 function defaultState(){return{
  settings:{sex:"mann",age:45,height:173,startWeight:110,goalWeight:95,activity:1.4,
    kcalTarget:2100,proteinTarget:150,autoTarget:true,deficit:600,aqGoal:100,apiKey:""},
- entries:[],weights:[],sessions:{"u1-0":true,"u1-1":true,"u1-2":true},seeded:true};}
+ entries:[],weights:[],okter8:{},sessions:{"u1-0":true,"u1-1":true,"u1-2":true},seeded:true};}
 
 function beregnMaal(s,vekt){
  const w=Number(vekt)||Number(s.startWeight)||110;
@@ -363,7 +417,7 @@ function beregnMaal(s,vekt){
  return{bmr:Math.round(bmr),tdee:Math.round(tdee),kcal,protein};}
 
 /* ---------------- State ---------------- */
-let state=defaultState(), tab='idag', apen=-1, visMaskiner=false, treff=[], sokFeil='', laster=false;
+let state=defaultState(), tab='idag', apen=-1, uke8=-1, apen8='', visMaskiner=false, treff=[], sokFeil='', laster=false;
 
 try{const r=localStorage.getItem(KEY);
  if(r){const p=JSON.parse(r);const b=defaultState();
@@ -466,6 +520,145 @@ function slettAlt(){
  if(!confirm('Slette all logg? Dette kan ikke angres.'))return;
  if(!confirm('Helt sikker?'))return;
  state=defaultState();save();render();toast('Alt slettet');}
+
+/* ---------------- 8-ukers økter ---------------- */
+const tall=x=>{const n=parseFloat(String(x).replace(',','.'));return isFinite(n)?n:null;};
+const fmt=n=>String(round(n,1)).replace('.',',');
+const okt8=k=>state.okter8[k]||{};
+const v8=(k,f)=>(okt8(k).v||{})[f]||'';
+function sett8(k,f,val){
+ const o=state.okter8[k]||(state.okter8[k]={});o.v=o.v||{};
+ if(val==='')delete o.v[f];else o.v[f]=val;
+ if(!o.dato)o.dato=todayKey();save();}
+function settMeta8(k,f,val){const o=state.okter8[k]||(state.okter8[k]={});o[f]=val;save();}
+function ferdig8(k){const o=state.okter8[k]||(state.okter8[k]={});o.ferdig=!o.ferdig;
+ if(!o.dato)o.dato=todayKey();save();if(o.ferdig){apen8='';toast('Økt fullført');}render();}
+function aapne8(k){apen8=(apen8===k?'':k);render();}
+function velgUke8(u){uke8=u;apen8='';render();}
+const finnUke8=()=>{for(const w of UKER8){if(!['A','B','C'].every(o=>okt8('w'+w.uke+'-'+o).ferdig))return w.uke;}return 8;};
+
+// Tyngste kg for en øvelse i en økt
+function toppKg(k,ex){let m=null;for(let i=1;i<=4;i++){const n=tall(v8(k,ex+':'+i+':kg'));if(n!==null&&(m===null||n>m))m=n;}return m;}
+function snittFart(k,drag){const f=[];for(let i=1;i<=drag;i++){const n=tall(v8(k,'i:'+i+':fart'));if(n!==null)f.push(n);}
+ return f.length?f.reduce((a,b)=>a+b,0)/f.length:null;}
+// Siste føring av en øvelse før gitt uke
+function forrigeStyrke(okt,ex,uke){
+ for(let u=uke-1;u>=1;u--){const k='w'+u+'-'+okt;const sett=[];
+  for(let i=1;i<=4;i++){const kg=v8(k,ex+':'+i+':kg'),r=v8(k,ex+':'+i+':reps');if(kg||r)sett.push((kg||'–')+'×'+(r||'–'));}
+  if(sett.length)return{uke:u,tekst:sett.join('  '),kg:toppKg(k,ex)};}
+ return null;}
+function forrigeVerdi(okt,f,uke){for(let u=uke-1;u>=1;u--){const x=v8('w'+u+'-'+okt,f);if(x)return{uke:u,x};}return null;}
+
+function fyllForrige8(k,okt,uke){
+ let n=0;const p=UKER8[uke-1][okt]||{};
+ (STYRKE8[okt]||[]).forEach(ex=>{const f=forrigeStyrke(okt,ex,uke);if(!f||f.kg===null)return;
+  for(let i=1;i<=(p.sett||0);i++){const id=ex+':'+i+':kg';if(!v8(k,id)){sett8(k,id,fmt(f.kg));n++;}}});
+ if(okt==='A')for(let i=1;i<=p.drag;i++){['fart','stig'].forEach(t=>{const fv=forrigeVerdi('A','i:'+i+':'+t,uke);const id='i:'+i+':'+t;
+   if(fv&&!v8(k,id)){sett8(k,id,fv.x);n++;}});}
+ if(okt==='B')Object.values(SIRKEL8).flat().forEach(([id])=>{const fv=forrigeVerdi('B','b:'+id,uke);
+  if(fv&&!v8(k,'b:'+id)){sett8(k,'b:'+id,fv.x);n++;}});
+ render();toast(n?'Fylte inn '+n+' felt':'Ingen tidligere tall å hente');}
+
+const inp8=(k,f,ph,mode='decimal')=>`<input class="input inp8" inputmode="${mode}" autocomplete="off"
+ value="${esc(v8(k,f))}" placeholder="${esc(ph)}" oninput="sett8('${k}','${f}',this.value)">`;
+const felt8=(k,f,lbl,ph,mode)=>`<div class="felt"><label>${lbl}</label>${inp8(k,f,ph,mode)}</div>`;
+
+function styrkeDel(k,okt,uke,p){
+ if(!p.sett)return '';
+ return `<div class="o8-del"><h3>Styrke · ${p.sett} sett × ${p.reps} reps${p.merk?' · '+esc(p.merk):''}</h3>
+ ${STYRKE8[okt].map(ex=>{const f=forrigeStyrke(okt,ex,uke);
+  return `<div class="ovelse8"><div class="ovelse8-navn"><span>${esc(OVELSER8[ex])}</span><span class="maal8">${p.sett} × ${p.reps}</span></div>
+   ${f?`<div class="forrige">Uke ${f.uke}: ${esc(f.tekst)}</div>`:''}
+   <div class="sett-rad"><span></span><span class="sett-hode">kg</span><span class="sett-hode">reps (mål ${p.reps})</span></div>
+   ${Array.from({length:p.sett},(_,i)=>`<div class="sett-rad"><span class="sett-nr">${i+1}</span>
+    ${inp8(k,ex+':'+(i+1)+':kg',f&&f.kg!==null?fmt(f.kg):'kg')}${inp8(k,ex+':'+(i+1)+':reps',String(p.reps),'numeric')}</div>`).join('')}</div>`;}).join('')}
+ <div class="hint">Avslutt hvert sett med 1–2 reps i tanken. Klarte du alle reps: +2,5–5 kg bein, +1–2,5 kg overkropp neste gang.</div></div>`;}
+
+function intervallDel(k,uke,p){
+ const f=uke>1?(()=>{for(let u=uke-1;u>=1;u--){const s=snittFart('w'+u+'-A',4);if(s!==null)return{uke:u,s};}return null;})():null;
+ return `<div class="o8-del"><h3>Intervall · ${p.drag} drag × 4 min</h3>
+ <div class="forrige">${p.dragMerk?esc(p.dragMerk)+'. ':''}85–95 % av makspuls, 3 min aktiv pause.${f?' Uke '+f.uke+': snitt '+fmt(f.s)+' km/t':''}</div>
+ <div class="sett-rad tre-felt" style="margin-top:8px"><span></span><span class="sett-hode">km/t</span><span class="sett-hode">stigning %</span><span class="sett-hode">makspuls</span></div>
+ ${Array.from({length:p.drag},(_,i)=>`<div class="sett-rad tre-felt"><span class="sett-nr">${i+1}</span>
+  ${inp8(k,'i:'+(i+1)+':fart','km/t')}${inp8(k,'i:'+(i+1)+':stig','%')}${inp8(k,'i:'+(i+1)+':puls','puls','numeric')}</div>`).join('')}</div>`;}
+
+function sirkelDel(k,uke,p){
+ const liste=p.nye?SIRKEL8.sen:SIRKEL8.tidlig;
+ return `<div class="o8-del"><h3>Sirkel · ${p.runder} runder ${p.arb}/${p.hvile}${p.nye?' · nye øvelser':''}</h3>
+ <div class="forrige">${p.arb} sek arbeid, ${p.hvile} sek pause per øvelse. 1 min pause mellom rundene.</div>
+ ${liste.map(([id,navn,enhet])=>{const f=forrigeVerdi('B','b:'+id,uke);
+  return `<div class="sirkel-rad"><div>${esc(navn)}<small>${p.runder} runder × ${p.arb} sek · ${enhet}${f?' · uke '+f.uke+': '+esc(f.x):''}</small></div>
+   ${inp8(k,'b:'+id,enhet,enhet==='kg'?'decimal':'numeric')}</div>`;}).join('')}
+ <div class="sirkel-rad"><div><b>Runder fullført</b></div>${inp8(k,'b:runder',String(p.runder),'numeric')}</div></div>`;}
+
+function roligDel(k,uke,p){
+ const f=forrigeVerdi('C','r:fart',uke);
+ return `<div class="o8-del"><h3>Rolig kondis · ${esc(p.min)} min</h3>
+ <div class="forrige">Løp, sykkel eller gange i motbakke. Du skal kunne prate i hele setninger.${f?' Uke '+f.uke+': '+esc(f.x)+' km/t':''}</div>
+ <div class="felt-rad" style="margin-top:8px">${felt8(k,'r:min','Minutter',p.min,'numeric')}${felt8(k,'r:fart','km/t','fart')}
+  ${felt8(k,'r:stig','Stigning %','%')}${felt8(k,'r:km','Km','km')}${felt8(k,'r:puls','Snittpuls','puls','numeric')}</div></div>`;}
+
+function valgfriDel(k,uke,p){
+ if(p.type==='min1')return `<div class="o8-del"><h3>Korte intervaller · ${p.drag} drag × 1 min</h3>
+  <div class="forrige">1 min hardt / 1 min rolig. Eller en lang rolig tur ute.</div>
+  <div class="felt-rad" style="margin-top:8px">${felt8(k,'m:drag','Drag',String(p.drag),'numeric')}${felt8(k,'m:fart','km/t','fart')}
+   ${felt8(k,'m:stig','Stigning %','%')}${felt8(k,'m:puls','Makspuls','puls','numeric')}</div></div>`;
+ if(p.type==='tur')return `<div class="o8-del"><h3>Valgfritt · rolig tur</h3>
+  <div class="felt-rad">${felt8(k,'t:min','Minutter','min','numeric')}${felt8(k,'t:km','Km','km')}${felt8(k,'t:puls','Snittpuls','puls','numeric')}</div></div>`;
+ return `<div class="o8-del"><h3>Test · 3 km på tid</h3>
+  <div class="felt-rad">${felt8(k,'k:tid','Tid (mm:ss)','mm:ss','text')}${felt8(k,'k:puls','Snittpuls','puls','numeric')}</div></div>`;}
+
+function oktKort8(w,okt){
+ const p=w[okt];if(!p)return '';
+ const k='w'+w.uke+'-'+okt,o=okt8(k),er=apen8===k;
+ const type=okt==='B'?'kondis':okt==='D'?'valgfri':'styrke';
+ const sub=okt==='A'?(p.sett?p.sett+' sett × '+p.reps+' reps · ':'')+p.drag+'×4 min'
+  :okt==='B'?p.runder+' runder '+p.arb+'/'+p.hvile
+  :okt==='C'?p.sett+' sett × '+p.reps+' reps · '+p.min+' min rolig'
+  :p.type==='min1'?p.drag+'×1 min':p.type==='tur'?'Rolig tur':'3 km på tid';
+ const navn=okt==='D'&&w.uke===8?'Økt 4 · Test':OKTNAVN8[okt];
+ return `<div class="o8 type-${type}">
+  <button class="o8-topp ${o.ferdig?'o8-gjort':''}" onclick="aapne8('${k}')">
+   <span class="hake">${o.ferdig?'✓':''}</span>
+   <span style="flex:1;min-width:0"><span class="o8-navn">${esc(navn)}</span>
+   <span class="o8-sub">${esc(sub)}${o.dato?' · '+prettyDate(o.dato):''}</span></span>
+   <span class="karet ${er?'karet-opp':''}">›</span></button>
+  ${er?`<div class="o8-innhold">
+   <div class="to"><div class="felt"><label>Dato</label><input class="input" type="date" value="${esc(o.dato||todayKey())}"
+    onchange="settMeta8('${k}','dato',this.value)"></div>
+    <button class="knapp" onclick="fyllForrige8('${k}','${okt}',${w.uke})">Hent forrige</button></div>
+   ${okt==='A'?styrkeDel(k,okt,w.uke,p)+intervallDel(k,w.uke,p):''}
+   ${okt==='B'?sirkelDel(k,w.uke,p):''}
+   ${okt==='C'?styrkeDel(k,okt,w.uke,p)+roligDel(k,w.uke,p):''}
+   ${okt==='D'?valgfriDel(k,w.uke,p):''}
+   <div class="o8-del"><h3>Notat</h3><textarea class="input" rows="2" placeholder="Hvordan gikk det?"
+    oninput="settMeta8('${k}','notat',this.value)">${esc(o.notat||'')}</textarea></div>
+   <button class="knapp ${o.ferdig?'':'knapp-primar'} knapp-blokk" onclick="ferdig8('${k}')">${o.ferdig?'Angre fullført':'Marker som fullført'}</button>
+  </div>`:''}</div>`;}
+
+function fremgang8(){
+ const rader=[];
+ const serie=fn=>UKER8.map(w=>({u:w.uke,x:fn(w)})).filter(r=>r.x!==null);
+ const rad=(navn,s,enhet)=>{if(!s.length)return;const a=s[0],b=s[s.length-1],d=b.x-a.x;
+  rader.push(`<div class="fremgang-rad"><span>${esc(navn)}</span><b>${s.length>1?'u'+a.u+' '+fmt(a.x)+' → u'+b.u+' '+fmt(b.x)+' '+enhet+
+   ' <span class="'+(d>0?'gronn':d<0?'rod':'')+'">('+(d>0?'+':'')+fmt(d)+')</span>':'u'+b.u+' '+fmt(b.x)+' '+enhet}</b></div>`);};
+ ['A','C'].forEach(o=>STYRKE8[o].forEach(ex=>rad(OVELSER8[ex],serie(w=>toppKg('w'+w.uke+'-'+o,ex)),'kg')));
+ rad('4x4 snittfart',serie(w=>snittFart('w'+w.uke+'-A',4)),'km/t');
+ rad('Rolig kondis fart',serie(w=>tall(v8('w'+w.uke+'-C','r:fart'))),'km/t');
+ return rader.length?`<div class="kort" style="gap:0">${rader.join('')}</div>`
+  :'<div class="tom-boks">Når du fører kg og fart, ser du utviklingen her.</div>';}
+
+function visOkter(){
+ const naa=finnUke8(),u=uke8===-1?naa:uke8,w=UKER8[u-1];
+ const totalt=UKER8.reduce((n,x)=>n+['A','B','C'].filter(o=>okt8('w'+x.uke+'-'+o).ferdig).length,0);
+ return `<header class="topp"><div><div class="eyebrow">8 uker · kondisjon + styrke</div><h1>Økter</h1></div>
+  <div class="uke-merke">${totalt}<span>av 24 økter</span></div></header>
+ <div class="ukevalg valg">${UKER8.map(x=>{const f=['A','B','C'].every(o=>okt8('w'+x.uke+'-'+o).ferdig);
+  return `<button class="valg-knapp ${x.uke===u?'valg-aktiv':f?'valg-ferdig':''}" onclick="velgUke8(${x.uke})" aria-label="Uke ${x.uke}">${x.uke}</button>`;}).join('')}</div>
+ <div class="uke8-tittel"><b>Uke ${u} · ${esc(w.t)}</b>${u===naa?'<span class="eyebrow">Denne uka</span>':''}</div>
+ ${['A','B','C','D'].map(o=>oktKort8(w,o)).join('')}
+ <div class="hint">Varm opp 10–12 min før hver økt. Minst én hviledag mellom A og C. Tallene lagres mens du skriver.</div>
+ <h2 class="seksjon">Fremgang</h2>${fremgang8()}`;}
 
 /* ---------------- Visninger ---------------- */
 function gauge(spist,forbrent,maal){
@@ -715,10 +908,10 @@ function visOppsett(){
   Bruk dem til å se retningen over tid.</div>`;}
 
 /* ---------------- Render ---------------- */
-const TABS=[['idag','I dag'],['legg','Legg til'],['uke','Uke'],['plan','Plan'],['opp','Oppsett']];
+const TABS=[['idag','I dag'],['legg','Legg til'],['okter','Økter'],['uke','Uke'],['plan','Plan'],['opp','Oppsett']];
 
 function render(){
- const v={idag:visIDag,legg:visLegg,uke:visUke,plan:visPlan,opp:visOppsett}[tab];
+ const v={idag:visIDag,legg:visLegg,okter:visOkter,uke:visUke,plan:visPlan,opp:visOppsett}[tab];
  document.getElementById('skjerm').innerHTML=v();
  document.getElementById('tabs').innerHTML=TABS.map(([k,l])=>
   `<button class="tab ${tab===k?'tab-aktiv':''}" onclick="byttTab('${k}')">${l}</button>`).join('');}
