@@ -227,7 +227,8 @@ ul.liste{list-style:none;margin:0;padding:0;}
 .o8-del h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600;}
 .ovelse8{margin-top:10px;}
 .ovelse8:first-of-type{margin-top:0;}
-.ovelse8-navn{font-size:13.5px;font-weight:600;}
+.ovelse8-navn{font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.maal8{flex-shrink:0;font-family:var(--font-m);font-size:11px;font-weight:600;color:var(--okse);background:var(--okse-lys);padding:2px 7px;border-radius:2px;white-space:nowrap;}
 .forrige{font-family:var(--font-m);font-size:10.5px;color:var(--muted);margin-top:2px;}
 .sett-rad{display:grid;grid-template-columns:30px minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;margin-top:5px;}
 .sett-rad.tre-felt{grid-template-columns:30px repeat(3,minmax(0,1fr));}
@@ -564,18 +565,18 @@ const felt8=(k,f,lbl,ph,mode)=>`<div class="felt"><label>${lbl}</label>${inp8(k,
 
 function styrkeDel(k,okt,uke,p){
  if(!p.sett)return '';
- return `<div class="o8-del"><h3>Styrke · ${p.sett}×${p.reps}${p.merk?' · '+esc(p.merk):''}</h3>
+ return `<div class="o8-del"><h3>Styrke · ${p.sett} sett × ${p.reps} reps${p.merk?' · '+esc(p.merk):''}</h3>
  ${STYRKE8[okt].map(ex=>{const f=forrigeStyrke(okt,ex,uke);
-  return `<div class="ovelse8"><div class="ovelse8-navn">${esc(OVELSER8[ex])}</div>
+  return `<div class="ovelse8"><div class="ovelse8-navn"><span>${esc(OVELSER8[ex])}</span><span class="maal8">${p.sett} × ${p.reps}</span></div>
    ${f?`<div class="forrige">Uke ${f.uke}: ${esc(f.tekst)}</div>`:''}
-   <div class="sett-rad"><span></span><span class="sett-hode">kg</span><span class="sett-hode">reps</span></div>
+   <div class="sett-rad"><span></span><span class="sett-hode">kg</span><span class="sett-hode">reps (mål ${p.reps})</span></div>
    ${Array.from({length:p.sett},(_,i)=>`<div class="sett-rad"><span class="sett-nr">${i+1}</span>
     ${inp8(k,ex+':'+(i+1)+':kg',f&&f.kg!==null?fmt(f.kg):'kg')}${inp8(k,ex+':'+(i+1)+':reps',String(p.reps),'numeric')}</div>`).join('')}</div>`;}).join('')}
  <div class="hint">Avslutt hvert sett med 1–2 reps i tanken. Klarte du alle reps: +2,5–5 kg bein, +1–2,5 kg overkropp neste gang.</div></div>`;}
 
 function intervallDel(k,uke,p){
  const f=uke>1?(()=>{for(let u=uke-1;u>=1;u--){const s=snittFart('w'+u+'-A',4);if(s!==null)return{uke:u,s};}return null;})():null;
- return `<div class="o8-del"><h3>Intervall · ${p.drag}×4 min</h3>
+ return `<div class="o8-del"><h3>Intervall · ${p.drag} drag × 4 min</h3>
  <div class="forrige">${p.dragMerk?esc(p.dragMerk)+'. ':''}85–95 % av makspuls, 3 min aktiv pause.${f?' Uke '+f.uke+': snitt '+fmt(f.s)+' km/t':''}</div>
  <div class="sett-rad tre-felt" style="margin-top:8px"><span></span><span class="sett-hode">km/t</span><span class="sett-hode">stigning %</span><span class="sett-hode">makspuls</span></div>
  ${Array.from({length:p.drag},(_,i)=>`<div class="sett-rad tre-felt"><span class="sett-nr">${i+1}</span>
@@ -586,7 +587,7 @@ function sirkelDel(k,uke,p){
  return `<div class="o8-del"><h3>Sirkel · ${p.runder} runder ${p.arb}/${p.hvile}${p.nye?' · nye øvelser':''}</h3>
  <div class="forrige">${p.arb} sek arbeid, ${p.hvile} sek pause per øvelse. 1 min pause mellom rundene.</div>
  ${liste.map(([id,navn,enhet])=>{const f=forrigeVerdi('B','b:'+id,uke);
-  return `<div class="sirkel-rad"><div>${esc(navn)}<small>${enhet}${f?' · uke '+f.uke+': '+esc(f.x):''}</small></div>
+  return `<div class="sirkel-rad"><div>${esc(navn)}<small>${p.runder} runder × ${p.arb} sek · ${enhet}${f?' · uke '+f.uke+': '+esc(f.x):''}</small></div>
    ${inp8(k,'b:'+id,enhet,enhet==='kg'?'decimal':'numeric')}</div>`;}).join('')}
  <div class="sirkel-rad"><div><b>Runder fullført</b></div>${inp8(k,'b:runder',String(p.runder),'numeric')}</div></div>`;}
 
@@ -598,7 +599,7 @@ function roligDel(k,uke,p){
   ${felt8(k,'r:stig','Stigning %','%')}${felt8(k,'r:km','Km','km')}${felt8(k,'r:puls','Snittpuls','puls','numeric')}</div></div>`;}
 
 function valgfriDel(k,uke,p){
- if(p.type==='min1')return `<div class="o8-del"><h3>Korte intervaller · ${p.drag}×1 min</h3>
+ if(p.type==='min1')return `<div class="o8-del"><h3>Korte intervaller · ${p.drag} drag × 1 min</h3>
   <div class="forrige">1 min hardt / 1 min rolig. Eller en lang rolig tur ute.</div>
   <div class="felt-rad" style="margin-top:8px">${felt8(k,'m:drag','Drag',String(p.drag),'numeric')}${felt8(k,'m:fart','km/t','fart')}
    ${felt8(k,'m:stig','Stigning %','%')}${felt8(k,'m:puls','Makspuls','puls','numeric')}</div></div>`;
@@ -611,9 +612,9 @@ function oktKort8(w,okt){
  const p=w[okt];if(!p)return '';
  const k='w'+w.uke+'-'+okt,o=okt8(k),er=apen8===k;
  const type=okt==='B'?'kondis':okt==='D'?'valgfri':'styrke';
- const sub=okt==='A'?(p.sett?p.sett+'×'+p.reps+' · ':'')+p.drag+'×4 min'
+ const sub=okt==='A'?(p.sett?p.sett+' sett × '+p.reps+' reps · ':'')+p.drag+'×4 min'
   :okt==='B'?p.runder+' runder '+p.arb+'/'+p.hvile
-  :okt==='C'?p.sett+'×'+p.reps+' · '+p.min+' min rolig'
+  :okt==='C'?p.sett+' sett × '+p.reps+' reps · '+p.min+' min rolig'
   :p.type==='min1'?p.drag+'×1 min':p.type==='tur'?'Rolig tur':'3 km på tid';
  const navn=okt==='D'&&w.uke===8?'Økt 4 · Test':OKTNAVN8[okt];
  return `<div class="o8 type-${type}">
