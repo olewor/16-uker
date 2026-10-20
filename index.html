@@ -257,6 +257,32 @@ nav.tabs{
 .tab{flex:1 1 0;min-width:0;padding:13px 1px 14px;background:none;border:none;font-size:10.5px;font-weight:600;color:var(--muted);border-top:2px solid transparent;margin-top:-1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tab-aktiv{color:var(--viol);border-top-color:var(--viol);}
 #toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 17px;border-radius:2px;font-size:12.5px;font-weight:600;z-index:50;white-space:nowrap;display:none;}
+/* Tidtaker */
+.tt-start{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--ink);color:var(--paper);border:none;border-radius:3px;padding:13px 15px;width:100%;text-align:left;}
+.tt-start b{display:block;font-size:14.5px;}
+.tt-start span{font-family:var(--font-m);font-size:11px;opacity:.75;}
+.tt-start i{font-style:normal;font-size:20px;}
+.tt-logg{font-family:var(--font-m);font-size:11px;color:var(--muted);line-height:1.6;}
+#tt[hidden]{display:none;}
+#tt{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:var(--ink);color:#fff;
+ padding:calc(18px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));
+ user-select:none;-webkit-user-select:none;}
+#tt.tt-arbeid{background:#8E2F14;}
+#tt.tt-pause{background:#174F40;}
+#tt.tt-rolig{background:#0F5C72;}
+.tt-topp{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-m);font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.8;}
+.tt-midt{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:8px;min-height:0;}
+.tt-fase{font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.15;text-wrap:balance;}
+.tt-tid{font-family:var(--font-m);font-size:min(30vw,150px);font-weight:600;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em;}
+.tt-teller{font-family:var(--font-m);font-size:15px;opacity:.85;}
+.tt-neste{font-size:14px;opacity:.75;margin-top:6px;}
+.tt-bar{height:6px;background:rgba(255,255,255,.2);margin:6px 0 16px;}
+.tt-bar div{height:100%;background:#fff;}
+.tt-fart{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px;font-size:14px;}
+.tt-fart input{width:96px;padding:10px;font:600 18px var(--font-m);text-align:center;border-radius:3px;border:none;background:rgba(255,255,255,.95);color:#15211C;}
+.tt-knapper{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;}
+.tt-knapper button{padding:18px 6px;font-size:15px;font-weight:700;border-radius:4px;border:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;}
+.tt-knapper .tt-hoved{background:#fff;color:#15211C;border-color:#fff;font-size:18px;}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
 </head>
@@ -264,6 +290,7 @@ nav.tabs{
 
 <div id="skjerm"></div>
 <div id="toast"></div>
+<div id="tt" hidden></div>
 <nav class="tabs" id="tabs"></nav>
 
 <script>
@@ -647,10 +674,13 @@ function oktKort8(w,okt){
    <div class="to"><div class="felt"><label>Dato</label><input class="input" type="date" value="${esc(o.dato||todayKey())}"
     onchange="settMeta8('${k}','dato',this.value)"></div>
     <button class="knapp" onclick="fyllForrige8('${k}','${okt}',${w.uke})">Hent forrige</button></div>
+   ${ttKnapp(k,okt,w.uke)}
    ${okt==='A'?styrkeDel(k,okt,w.uke,p)+intervallDel(k,w.uke,p):''}
    ${okt==='B'?sirkelDel(k,w.uke,p):''}
    ${okt==='C'?styrkeDel(k,okt,w.uke,p)+roligDel(k,w.uke,p):''}
    ${okt==='D'?valgfriDel(k,w.uke,p):''}
+   ${o.tider&&o.tider.length?`<div class="o8-del"><h3>Tider${o.start?' · '+esc(o.start)+'–'+esc(o.slutt||''):''}</h3>
+    <div class="tt-logg">${o.tider.map(t=>esc(t.n)+' '+mmss(t.s)).join(' · ')}</div></div>`:''}
    <div class="o8-del"><h3>Notat</h3><textarea class="input" rows="2" placeholder="Hvordan gikk det?"
     oninput="settMeta8('${k}','notat',this.value)">${esc(o.notat||'')}</textarea></div>
    <button class="knapp ${o.ferdig?'':'knapp-primar'} knapp-blokk" onclick="ferdig8('${k}')">${o.ferdig?'Angre fullført':'Marker som fullført'}</button>
@@ -670,6 +700,176 @@ function fremgang8(){
  rad('Rolig kondis fart',serie(w=>tall(v8('w'+w.uke+'-C','r:fart'))),'km/t');
  return rader.length?`<div class="kort" style="gap:0">${rader.join('')}</div>`
   :'<div class="tom-boks">Når du fører kg og fart, ser du utviklingen her.</div>';}
+
+/* ---------------- Tidtaker med opplesning ---------------- */
+const mmss=sek=>{sek=Math.max(0,Math.round(sek));return Math.floor(sek/60)+':'+String(sek%60).padStart(2,'0');};
+const minTekst=sek=>sek%60===0?(sek/60===1?'ett minutt':sek/60+' minutter'):sek+' sekunder';
+
+// Lager fasene for en økt ut fra uka
+function faser8(okt,uke){
+ const p=UKER8[uke-1][okt];if(!p)return null;const f=[];
+ if(okt==='A'){
+  f.push({n:'Oppvarming',sek:300,t:'rolig',tale:'Oppvarming. Fem minutter rolig løp. Ta to stigningsløp mot slutten.'});
+  for(let i=1;i<=p.drag;i++){
+   f.push({n:'Drag '+i+' av '+p.drag,sek:240,t:'arbeid',drag:i,tale:'Drag '+i+' av '+p.drag+'. Fire minutter. Kjør!'});
+   if(i<p.drag)f.push({n:'Aktiv pause',sek:180,t:'pause',etterDrag:i,tale:'Pause. Tre minutter rolig. Neste er drag '+(i+1)+'.'});}
+  f.push({n:'Nedjogg',sek:300,t:'rolig',etterDrag:p.drag,tale:'Siste drag ferdig. Fem minutter rolig nedjogg.'});}
+ else if(okt==='B'){
+  const liste=p.nye?SIRKEL8.sen:SIRKEL8.tidlig;
+  f.push({n:'Gjør deg klar',sek:10,t:'pause',tale:'Runde 1 av '+p.runder+'. Først: '+liste[0][1]+'.'});
+  for(let r=1;r<=p.runder;r++)liste.forEach(([id,navn],j)=>{
+   f.push({n:navn,sek:p.arb,t:'arbeid',runde:r,tale:navn+'. '+p.arb+' sekunder.'});
+   const sisteOv=j===liste.length-1;
+   if(!sisteOv)f.push({n:'Pause',sek:p.hvile,t:'pause',runde:r,tale:'Pause. Neste: '+liste[j+1][1]+'.'});
+   else if(r<p.runder)f.push({n:'Rundepause',sek:60,t:'pause',runde:r,tale:'Runde '+r+' ferdig. Ett minutt pause. Så runde '+(r+1)+', med '+liste[0][1]+'.'});});}
+ else if(okt==='C'){
+  const min=parseInt(p.min,10)||30;
+  f.push({n:'Rolig kondis',sek:min*60,t:'rolig',tale:min+' minutter rolig. Du skal kunne prate i hele setninger.'});}
+ else if(p.type==='min1'){
+  f.push({n:'Oppvarming',sek:300,t:'rolig',tale:'Oppvarming. Fem minutter rolig.'});
+  for(let i=1;i<=p.drag;i++){
+   f.push({n:'Drag '+i+' av '+p.drag,sek:60,t:'arbeid',drag:i,tale:'Drag '+i+'. Ett minutt hardt!'});
+   f.push({n:i<p.drag?'Rolig':'Nedjogg',sek:i<p.drag?60:300,t:i<p.drag?'pause':'rolig',
+    tale:i<p.drag?'Rolig. Ett minutt.':'Siste drag ferdig. Fem minutter nedjogg.'});}}
+ else if(p.type==='test3k'){
+  f.push({n:'3 km på tid',sek:0,t:'arbeid',stoppeklokke:true,tale:'Tre kilometer på tid. Klokka går. Trykk Stopp når du er i mål.'});}
+ else return null;
+ return f;}
+
+function ttKnapp(k,okt,uke){
+ const f=faser8(okt,uke);if(!f)return '';
+ const tot=f.reduce((a,x)=>a+x.sek,0);
+ const sub=f[0].stoppeklokke?'Stoppeklokke':(okt==='A'?'Intervalldelen, etter styrken · ':'')+Math.round(tot/60)+' min';
+ return `<button class="tt-start" onclick="ttStart('${k}','${okt}',${uke})"><span><b>Start tidtaker</b>
+  <span>${esc(sub)} · leser opp i AirPods</span></span><i>▶</i></button>`;}
+
+let tt=null;
+const ttEl=()=>document.getElementById('tt');
+
+// Lyd og tale
+let ttLyd=null,ttStemme=null;
+function ttFinnStemme(){try{const v=speechSynthesis.getVoices();
+ ttStemme=v.find(x=>/^nb|^no/i.test(x.lang))||v.find(x=>/norsk|norwegian/i.test(x.name))||null;}catch(e){}}
+try{ttFinnStemme();speechSynthesis.onvoiceschanged=ttFinnStemme;}catch(e){}
+function si(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='nb-NO';
+ if(ttStemme)u.voice=ttStemme;u.rate=1.02;speechSynthesis.speak(u);}catch(e){}}
+function pip(frek=880,lengde=.15){try{if(!ttLyd)return;const o=ttLyd.createOscillator(),g=ttLyd.createGain();
+ o.frequency.value=frek;o.connect(g);g.connect(ttLyd.destination);const n=ttLyd.currentTime;
+ g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(.5,n+.01);g.gain.exponentialRampToValueAtTime(.0001,n+lengde);
+ o.start(n);o.stop(n+lengde+.02);}catch(e){}}
+async function ttVaaken(){try{if(navigator.wakeLock&&!document.hidden)tt.las=await navigator.wakeLock.request('screen');}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(tt&&!document.hidden){ttVaaken();ttTikk();}});
+
+function ttStart(k,okt,uke){
+ const f=faser8(okt,uke);if(!f)return;
+ try{ttLyd=ttLyd||new (window.AudioContext||window.webkitAudioContext)();ttLyd.resume();}catch(e){}
+ const naa=new Date();
+ tt={k,okt,uke,f,i:0,faseStart:Date.now(),pauset:0,pauseFra:0,logg:[],sagt:{},
+  start:String(naa.getHours()).padStart(2,'0')+':'+String(naa.getMinutes()).padStart(2,'0')};
+ si(f[0].tale);pip(660,.25);
+ ttVaaken();ttTegn();tt.int=setInterval(ttTikk,250);}
+
+const ttBrukt=()=>((tt.pauseFra||Date.now())-tt.faseStart-tt.pauset)/1000;
+
+function ttTikk(){
+ if(!tt||tt.pauseFra)return;
+ let fase=tt.f[tt.i];
+ if(fase.stoppeklokke){
+  const b=Math.floor(ttBrukt());
+  if(b>0&&b%300===0&&!tt.sagt['m'+b]){tt.sagt['m'+b]=1;si(b/60+' minutter.');}
+  ttOppdater();return;}
+ // Hopp over faser som gikk ut mens skjermen var av
+ let byttet=false;
+ while(fase&&ttBrukt()>=fase.sek){
+  tt.logg.push({n:fase.n,s:fase.sek});
+  tt.faseStart+=fase.sek*1000+tt.pauset;tt.pauset=0;tt.i++;tt.sagt={};byttet=true;
+  fase=tt.f[tt.i];}
+ if(!fase)return ttFerdig(true);
+ if(byttet){si(fase.tale);pip(fase.t==='arbeid'?990:660,.3);ttTegn();return;}
+ const igjen=Math.ceil(fase.sek-ttBrukt());
+ if(fase.sek>=180&&igjen===60&&!tt.sagt.m1){tt.sagt.m1=1;si('Ett minutt igjen.');}
+ if(fase.sek>=600&&igjen===Math.round(fase.sek/2)&&!tt.sagt.h){tt.sagt.h=1;si('Halvveis. '+minTekst(igjen)+' igjen.');}
+ if(fase.sek>=30&&igjen===10&&!tt.sagt.s10){tt.sagt.s10=1;
+  const neste=tt.f[tt.i+1];si(neste?'Ti sekunder. Neste: '+neste.n+'.':'Ti sekunder igjen.');}
+ if(igjen<=3&&igjen>=1&&!tt.sagt['p'+igjen]){tt.sagt['p'+igjen]=1;pip(880,.12);}
+ ttOppdater();}
+
+function ttTegn(){
+ const el=ttEl(),fase=tt.f[tt.i],neste=tt.f[tt.i+1];
+ const fartDrag=tt.okt==='A'&&fase.etterDrag?fase.etterDrag:0;
+ el.className='tt-'+fase.t;el.hidden=false;
+ el.innerHTML=`<div class="tt-topp"><span>${esc(OKTNAVN8[tt.okt].split(' · ')[0])} · uke ${tt.uke}</span><span id="ttTot"></span></div>
+  <div class="tt-bar"><div id="ttBar"></div></div>
+  <div class="tt-midt">
+   ${fase.runde?`<div class="tt-teller">Runde ${fase.runde} av ${UKER8[tt.uke-1].B.runder}</div>`:''}
+   <div class="tt-fase">${esc(fase.n)}</div>
+   <div class="tt-tid" id="ttTid"></div>
+   ${neste?`<div class="tt-neste">Neste: ${esc(neste.n)}${neste.sek?' · '+mmss(neste.sek):''}</div>`:''}
+   ${fartDrag?`<label class="tt-fart">Fart drag ${fartDrag}
+    <input inputmode="decimal" placeholder="km/t" value="${esc(v8(tt.k,'i:'+fartDrag+':fart'))}"
+     oninput="sett8('${tt.k}','i:${fartDrag}:fart',this.value)"></label>`:''}
+  </div>
+  <div class="tt-knapper">
+   <button onclick="ttAvbryt()">Avslutt</button>
+   ${fase.stoppeklokke?'<button class="tt-hoved" onclick="ttFerdig(true)">Stopp</button>'
+    :`<button class="tt-hoved" id="ttPause" onclick="ttPause()">${tt.pauseFra?'Fortsett':'Pause'}</button>`}
+   <button onclick="ttNeste()" ${fase.stoppeklokke?'disabled':''}>Neste ›</button></div>`;
+ ttOppdater();}
+
+function ttOppdater(){
+ const fase=tt.f[tt.i];if(!fase)return;
+ const b=ttBrukt(),tid=document.getElementById('ttTid');
+ if(tid)tid.textContent=fase.stoppeklokke?mmss(b):mmss(Math.ceil(fase.sek-b));
+ const totSek=tt.f.reduce((a,x)=>a+x.sek,0),ferdigSek=tt.f.slice(0,tt.i).reduce((a,x)=>a+x.sek,0)+Math.min(b,fase.sek);
+ const bar=document.getElementById('ttBar');if(bar)bar.style.width=(totSek?Math.min(100,ferdigSek/totSek*100):0)+'%';
+ const tot=document.getElementById('ttTot');if(tot)tot.textContent=totSek?mmss(totSek-ferdigSek)+' igjen':'';}
+
+function ttPause(){
+ if(!tt)return;
+ if(tt.pauseFra){tt.pauset+=Date.now()-tt.pauseFra;tt.pauseFra=0;si('Fortsetter.');}
+ else{tt.pauseFra=Date.now();si('Pause.');}
+ const k=document.getElementById('ttPause');if(k)k.textContent=tt.pauseFra?'Fortsett':'Pause';}
+
+function ttNeste(){
+ if(!tt)return;const fase=tt.f[tt.i];
+ if(tt.pauseFra){tt.pauset+=Date.now()-tt.pauseFra;tt.pauseFra=0;}
+ tt.logg.push({n:fase.n,s:Math.round(ttBrukt())});
+ tt.i++;tt.faseStart=Date.now();tt.pauset=0;tt.sagt={};
+ const ny=tt.f[tt.i];if(!ny)return ttFerdig(true);
+ si(ny.tale);pip(ny.t==='arbeid'?990:660,.3);ttTegn();}
+
+function ttAvbryt(){
+ if(!tt)return;
+ const el=ttEl();
+ el.querySelector('.tt-knapper').innerHTML=`<button onclick="ttTegn()">Tilbake</button>
+  <button class="tt-hoved" onclick="ttFerdig(false)">Lagre tidene</button><button onclick="ttLukk()">Forkast</button>`;}
+
+function ttLukk(){
+ if(!tt)return;clearInterval(tt.int);try{tt.las&&tt.las.release();}catch(e){}
+ try{speechSynthesis.cancel();}catch(e){}
+ tt=null;const el=ttEl();el.hidden=true;el.innerHTML='';render();}
+
+// Lagrer tidene i økta og fyller inn det som kan regnes ut
+function ttFerdig(helt){
+ if(!tt)return;const fase=tt.f[tt.i];
+ if(fase&&tt.logg.length<=tt.i){if(tt.pauseFra){tt.pauset+=Date.now()-tt.pauseFra;tt.pauseFra=0;}
+  tt.logg.push({n:fase.n,s:Math.round(ttBrukt())});}
+ const {k,okt,uke,logg}=tt,p=UKER8[uke-1][okt];
+ const o=state.okter8[k]||(state.okter8[k]={});o.v=o.v||{};
+ const naa=new Date();
+ o.tider=logg;o.start=tt.start;o.slutt=String(naa.getHours()).padStart(2,'0')+':'+String(naa.getMinutes()).padStart(2,'0');
+ if(!o.dato)o.dato=todayKey();
+ const sum=n=>logg.filter(x=>x.n===n).reduce((a,x)=>a+x.s,0);
+ const fyll=(f,v)=>{if(!o.v[f]&&v>0)o.v[f]=String(v);};
+ if(okt==='B'){const liste=p.nye?SIRKEL8.sen:SIRKEL8.tidlig,siste=liste[liste.length-1][1];
+  fyll('b:runder',logg.filter(x=>x.n===siste&&x.s>=p.arb-1).length);}
+ if(okt==='C')fyll('r:min',Math.round(sum('Rolig kondis')/60));
+ if(okt==='D'&&p.type==='min1')fyll('m:drag',logg.filter(x=>/^Drag /.test(x.n)&&x.s>=50).length);
+ if(okt==='D'&&p.type==='test3k')o.v['k:tid']=mmss(sum('3 km på tid'));
+ if(helt)o.ferdig=true;
+ save();
+ si(helt?'Økta er ferdig. Godt jobba!':'Tidene er lagret.');
+ apen8=k;ttLukk();toast(helt?'Økt fullført – tidene er lagret':'Tidene er lagret');}
 
 function visOkter(){
  const naa=finnUke8(),u=uke8===-1?naa:uke8,w=UKER8[u-1];
