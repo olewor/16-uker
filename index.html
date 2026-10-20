@@ -228,6 +228,8 @@ ul.liste{list-style:none;margin:0;padding:0;}
 .ovelse8{margin-top:10px;}
 .ovelse8:first-of-type{margin-top:0;}
 .ovelse8-navn{font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.utstyr8{margin-top:6px;max-width:220px;}
+.utstyr8 .valg-knapp{padding:7px 4px;font-size:12px;}
 .maal8{flex-shrink:0;font-family:var(--font-m);font-size:11px;font-weight:600;color:var(--okse);background:var(--okse-lys);padding:2px 7px;border-radius:2px;white-space:nowrap;}
 .forrige{font-family:var(--font-m);font-size:10.5px;color:var(--muted);margin-top:2px;}
 .sett-rad{display:grid;grid-template-columns:30px minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;margin-top:5px;}
@@ -371,6 +373,9 @@ const OVELSER8={
  kneboy:"Knebøy",benk:"Benkpress",nedtrekk:"Nedtrekk eller sittende roing",
  mark:"Markløft (eller hip thrust)",skulder:"Skulderpress med manualer",utfallC:"Utfall eller bulgarske utfall",roing:"Roing med manual"};
 const STYRKE8={A:["kneboy","benk","nedtrekk"],C:["mark","skulder","utfallC","roing"]};
+// Stangøvelser der du velger fri stang eller Smith-maskin
+const STANG8=["kneboy","benk","mark"];
+const UTSTYR8={fri:"Fri stang",smith:"Smith"};
 const SIRKEL8={
  tidlig:[["kb","Kettlebell-sving","kg"],["utfallB","Utfall","kg"],["armhev","Armhevinger","reps"],["romaskin","Romaskin","meter"],["planke","Planke","sek"]],
  sen:[["stepup","Box step-ups","kg"],["goblet","Goblet squat","kg"],["thruster","Thrusters med manualer","kg"],["airbike","Airbike","kcal"],["climber","Mountain climbers","reps"]]};
@@ -542,16 +547,29 @@ function toppKg(k,ex){let m=null;for(let i=1;i<=4;i++){const n=tall(v8(k,ex+':'+
 function snittFart(k,drag){const f=[];for(let i=1;i<=drag;i++){const n=tall(v8(k,'i:'+i+':fart'));if(n!==null)f.push(n);}
  return f.length?f.reduce((a,b)=>a+b,0)/f.length:null;}
 // Siste føring av en øvelse før gitt uke
-function forrigeStyrke(okt,ex,uke){
+// Fri stang eller Smith: valgt i økta, ellers samme som sist
+function utstyr8(okt,ex,uke){
+ if(!STANG8.includes(ex))return '';
+ for(let u=uke;u>=1;u--){const x=v8('w'+u+'-'+okt,ex+':utstyr');if(x)return x;}
+ return 'fri';}
+function velgUtstyr8(k,ex,val){sett8(k,ex+':utstyr',val);render();}
+// Siste føring av en øvelse før gitt uke, helst med samme utstyr
+function forrigeStyrke(okt,ex,uke,utstyr){
+ let reserve=null;
  for(let u=uke-1;u>=1;u--){const k='w'+u+'-'+okt;const sett=[];
   for(let i=1;i<=4;i++){const kg=v8(k,ex+':'+i+':kg'),r=v8(k,ex+':'+i+':reps');if(kg||r)sett.push((kg||'–')+'×'+(r||'–'));}
-  if(sett.length)return{uke:u,tekst:sett.join('  '),kg:toppKg(k,ex)};}
- return null;}
+  if(!sett.length)continue;
+  const ut=utstyr8(okt,ex,u);
+  const f={uke:u,tekst:sett.join('  ')+(ut?' ('+UTSTYR8[ut]+')':''),kg:toppKg(k,ex),utstyr:ut};
+  if(!utstyr||ut===utstyr)return f;
+  if(!reserve)reserve=f;}
+ return reserve;}
 function forrigeVerdi(okt,f,uke){for(let u=uke-1;u>=1;u--){const x=v8('w'+u+'-'+okt,f);if(x)return{uke:u,x};}return null;}
 
 function fyllForrige8(k,okt,uke){
  let n=0;const p=UKER8[uke-1][okt]||{};
- (STYRKE8[okt]||[]).forEach(ex=>{const f=forrigeStyrke(okt,ex,uke);if(!f||f.kg===null)return;
+ (STYRKE8[okt]||[]).forEach(ex=>{const ut=utstyr8(okt,ex,uke);const f=forrigeStyrke(okt,ex,uke,ut);
+  if(!f||f.kg===null||(ut&&f.utstyr!==ut))return;
   for(let i=1;i<=(p.sett||0);i++){const id=ex+':'+i+':kg';if(!v8(k,id)){sett8(k,id,fmt(f.kg));n++;}}});
  if(okt==='A')for(let i=1;i<=p.drag;i++){['fart','stig'].forEach(t=>{const fv=forrigeVerdi('A','i:'+i+':'+t,uke);const id='i:'+i+':'+t;
    if(fv&&!v8(k,id)){sett8(k,id,fv.x);n++;}});}
@@ -566,12 +584,14 @@ const felt8=(k,f,lbl,ph,mode)=>`<div class="felt"><label>${lbl}</label>${inp8(k,
 function styrkeDel(k,okt,uke,p){
  if(!p.sett)return '';
  return `<div class="o8-del"><h3>Styrke · ${p.sett} sett × ${p.reps} reps${p.merk?' · '+esc(p.merk):''}</h3>
- ${STYRKE8[okt].map(ex=>{const f=forrigeStyrke(okt,ex,uke);
+ ${STYRKE8[okt].map(ex=>{const ut=utstyr8(okt,ex,uke),f=forrigeStyrke(okt,ex,uke,ut);
   return `<div class="ovelse8"><div class="ovelse8-navn"><span>${esc(OVELSER8[ex])}</span><span class="maal8">${p.sett} × ${p.reps}</span></div>
+   ${ut?`<div class="valg utstyr8">${Object.entries(UTSTYR8).map(([v,l])=>`<button class="valg-knapp ${ut===v?'valg-aktiv':''}"
+    onclick="velgUtstyr8('${k}','${ex}','${v}')">${l}</button>`).join('')}</div>`:''}
    ${f?`<div class="forrige">Uke ${f.uke}: ${esc(f.tekst)}</div>`:''}
    <div class="sett-rad"><span></span><span class="sett-hode">kg</span><span class="sett-hode">reps (mål ${p.reps})</span></div>
    ${Array.from({length:p.sett},(_,i)=>`<div class="sett-rad"><span class="sett-nr">${i+1}</span>
-    ${inp8(k,ex+':'+(i+1)+':kg',f&&f.kg!==null?fmt(f.kg):'kg')}${inp8(k,ex+':'+(i+1)+':reps',String(p.reps),'numeric')}</div>`).join('')}</div>`;}).join('')}
+    ${inp8(k,ex+':'+(i+1)+':kg',f&&f.kg!==null&&(!ut||f.utstyr===ut)?fmt(f.kg):'kg')}${inp8(k,ex+':'+(i+1)+':reps',String(p.reps),'numeric')}</div>`).join('')}</div>`;}).join('')}
  <div class="hint">Avslutt hvert sett med 1–2 reps i tanken. Klarte du alle reps: +2,5–5 kg bein, +1–2,5 kg overkropp neste gang.</div></div>`;}
 
 function intervallDel(k,uke,p){
@@ -642,7 +662,10 @@ function fremgang8(){
  const rad=(navn,s,enhet)=>{if(!s.length)return;const a=s[0],b=s[s.length-1],d=b.x-a.x;
   rader.push(`<div class="fremgang-rad"><span>${esc(navn)}</span><b>${s.length>1?'u'+a.u+' '+fmt(a.x)+' → u'+b.u+' '+fmt(b.x)+' '+enhet+
    ' <span class="'+(d>0?'gronn':d<0?'rod':'')+'">('+(d>0?'+':'')+fmt(d)+')</span>':'u'+b.u+' '+fmt(b.x)+' '+enhet}</b></div>`);};
- ['A','C'].forEach(o=>STYRKE8[o].forEach(ex=>rad(OVELSER8[ex],serie(w=>toppKg('w'+w.uke+'-'+o,ex)),'kg')));
+ ['A','C'].forEach(o=>STYRKE8[o].forEach(ex=>{
+  if(!STANG8.includes(ex))return rad(OVELSER8[ex],serie(w=>toppKg('w'+w.uke+'-'+o,ex)),'kg');
+  Object.entries(UTSTYR8).forEach(([v,l])=>rad(OVELSER8[ex]+' · '+l,
+   serie(w=>utstyr8(o,ex,w.uke)===v?toppKg('w'+w.uke+'-'+o,ex):null),'kg'));}));
  rad('4x4 snittfart',serie(w=>snittFart('w'+w.uke+'-A',4)),'km/t');
  rad('Rolig kondis fart',serie(w=>tall(v8('w'+w.uke+'-C','r:fart'))),'km/t');
  return rader.length?`<div class="kort" style="gap:0">${rader.join('')}</div>`
