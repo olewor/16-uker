@@ -717,7 +717,6 @@ function fremgang8(){
 
 /* ---------------- Tidtaker med opplesning ---------------- */
 const mmss=sek=>{sek=Math.max(0,Math.round(sek));return Math.floor(sek/60)+':'+String(sek%60).padStart(2,'0');};
-const minTekst=sek=>sek%60===0?(sek/60===1?'ett minutt':sek/60+' minutter'):sek+' sekunder';
 
 // Lager fasene for en økt ut fra uka
 function faser8(okt,uke){
@@ -756,7 +755,7 @@ function ttKnapp(k,okt,uke){
  const tot=f.reduce((a,x)=>a+x.sek,0);
  const sub=f[0].stoppeklokke?'Stoppeklokke':(okt==='A'?'Intervalldelen, etter styrken · ':'')+Math.round(tot/60)+' min';
  return `<button class="tt-start" onclick="ttStart('${k}','${okt}',${uke})"><span><b>Start tidtaker</b>
-  <span>${esc(sub)} · leser opp i AirPods</span></span><i>▶</i></button>`;}
+  <span>${esc(sub)} · varsler i AirPods</span></span><i>▶</i></button>`;}
 
 let tt=null;
 const ttEl=()=>document.getElementById('tt');
@@ -766,7 +765,7 @@ let ttLyd=null,ttStemme=null;
 function ttFinnStemme(){try{const v=speechSynthesis.getVoices();
  ttStemme=v.find(x=>/^nb|^no/i.test(x.lang))||v.find(x=>/norsk|norwegian/i.test(x.name))||null;}catch(e){}}
 try{ttFinnStemme();speechSynthesis.onvoiceschanged=ttFinnStemme;}catch(e){}
-function si(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='nb-NO';
+function si(t,volum=1){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='nb-NO';u.volume=volum;
  if(ttStemme)u.voice=ttStemme;u.rate=1.02;speechSynthesis.speak(u);}catch(e){}}
 function pip(frek=880,lengde=.15){try{if(!ttLyd)return;const o=ttLyd.createOscillator(),g=ttLyd.createGain();
  o.frequency.value=frek;o.connect(g);g.connect(ttLyd.destination);const n=ttLyd.currentTime;
@@ -781,7 +780,7 @@ function ttStart(k,okt,uke){
  const naa=new Date();
  tt={k,okt,uke,f,i:0,faseStart:Date.now(),pauset:0,pauseFra:0,logg:[],sagt:{},
   start:String(naa.getHours()).padStart(2,'0')+':'+String(naa.getMinutes()).padStart(2,'0')};
- si(f[0].tale);pip(660,.25);
+ si(' ',0);pip(660,.25); // låser opp tale på iPhone, sier ingenting
  ttVaaken();ttTegn();tt.int=setInterval(ttTikk,250);}
 
 const ttBrukt=()=>((tt.pauseFra||Date.now())-tt.faseStart-tt.pauset)/1000;
@@ -791,7 +790,6 @@ function ttTikk(){
  let fase=tt.f[tt.i];
  if(fase.stoppeklokke){
   const b=Math.floor(ttBrukt());
-  if(b>0&&b%300===0&&!tt.sagt['m'+b]){tt.sagt['m'+b]=1;si(b/60+' minutter.');}
   ttOppdater();return;}
  // Hopp over faser som gikk ut mens skjermen var av
  let byttet=false;
@@ -800,12 +798,12 @@ function ttTikk(){
   tt.faseStart+=fase.sek*1000+tt.pauset;tt.pauset=0;tt.i++;tt.sagt={};byttet=true;
   fase=tt.f[tt.i];}
  if(!fase)return ttFerdig(true);
- if(byttet){si(fase.tale);pip(fase.t==='arbeid'?990:660,.3);ttTegn();return;}
+if(byttet){pip(fase.t==='arbeid'?990:660,.3);ttTegn();return;}
  const igjen=Math.ceil(fase.sek-ttBrukt());
+ // Lengre faser: halvveis og ett minutt igjen. Alle: ti sekunder igjen, så pip på 3-2-1
+ if(fase.sek>=180&&igjen===Math.round(fase.sek/2)&&!tt.sagt.h){tt.sagt.h=1;si('Halvveis.');}
  if(fase.sek>=180&&igjen===60&&!tt.sagt.m1){tt.sagt.m1=1;si('Ett minutt igjen.');}
- if(fase.sek>=600&&igjen===Math.round(fase.sek/2)&&!tt.sagt.h){tt.sagt.h=1;si('Halvveis. '+minTekst(igjen)+' igjen.');}
- if(fase.sek>=30&&igjen===10&&!tt.sagt.s10){tt.sagt.s10=1;
-  const neste=tt.f[tt.i+1];si(neste?'Ti sekunder. Neste: '+neste.n+'.':'Ti sekunder igjen.');}
+ if(fase.sek>=15&&igjen===10&&!tt.sagt.s10){tt.sagt.s10=1;si('Ti sekunder igjen.');}
  if(igjen<=3&&igjen>=1&&!tt.sagt['p'+igjen]){tt.sagt['p'+igjen]=1;pip(880,.12);}
  ttOppdater();}
 
@@ -841,8 +839,8 @@ function ttOppdater(){
 
 function ttPause(){
  if(!tt)return;
- if(tt.pauseFra){tt.pauset+=Date.now()-tt.pauseFra;tt.pauseFra=0;si('Fortsetter.');}
- else{tt.pauseFra=Date.now();si('Pause.');}
+ if(tt.pauseFra){tt.pauset+=Date.now()-tt.pauseFra;tt.pauseFra=0;}
+ else tt.pauseFra=Date.now();
  const k=document.getElementById('ttPause');if(k)k.textContent=tt.pauseFra?'Fortsett':'Pause';}
 
 function ttNeste(){
@@ -851,7 +849,7 @@ function ttNeste(){
  tt.logg.push({n:fase.n,s:Math.round(ttBrukt())});
  tt.i++;tt.faseStart=Date.now();tt.pauset=0;tt.sagt={};
  const ny=tt.f[tt.i];if(!ny)return ttFerdig(true);
- si(ny.tale);pip(ny.t==='arbeid'?990:660,.3);ttTegn();}
+ pip(ny.t==='arbeid'?990:660,.3);ttTegn();}
 
 function ttAvbryt(){
  if(!tt)return;
@@ -883,7 +881,6 @@ function ttFerdig(helt){
  if(okt==='D'&&p.type==='test3k')o.v['k:tid']=mmss(sum('3 km på tid'));
  if(helt)o.ferdig=true;
  save();
- si(helt?'Økta er ferdig. Godt jobba!':'Tidene er lagret.');
  apen8=k;ttLukk();toast(helt?'Økt fullført – tidene er lagret':'Tidene er lagret');}
 
 function visOkter(){
