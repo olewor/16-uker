@@ -767,20 +767,50 @@ function ttFinnStemme(){try{const v=speechSynthesis.getVoices();
 try{ttFinnStemme();speechSynthesis.onvoiceschanged=ttFinnStemme;}catch(e){}
 function si(t,volum=1){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='nb-NO';u.volume=volum;
  if(ttStemme)u.voice=ttStemme;u.rate=1.02;speechSynthesis.speak(u);}catch(e){}}
-function pip(frek=880,lengde=.15){try{if(!ttLyd)return;const o=ttLyd.createOscillator(),g=ttLyd.createGain();
- o.frequency.value=frek;o.connect(g);g.connect(ttLyd.destination);const n=ttLyd.currentTime;
- g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(.5,n+.01);g.gain.exponentialRampToValueAtTime(.0001,n+lengde);
- o.start(n);o.stop(n+lengde+.02);}catch(e){}}
+// Pip som ferdige lydfiler (WAV). På iPhone stopper talen Web Audio, men ikke vanlige lydelementer.
+function lagPip(frek,lengde){
+ const rate=22050,n=Math.floor(rate*lengde),buf=new ArrayBuffer(44+n*2),d=new DataView(buf);
+ const str=(o,t)=>{for(let i=0;i<t.length;i++)d.setUint8(o+i,t.charCodeAt(i));};
+ str(0,'RIFF');d.setUint32(4,36+n*2,true);str(8,'WAVEfmt ');d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,1,true);
+ d.setUint32(24,rate,true);d.setUint32(28,rate*2,true);d.setUint16(32,2,true);d.setUint16(34,16,true);str(36,'data');d.setUint32(40,n*2,true);
+ for(let i=0;i<n;i++){const t=i/rate,env=Math.min(1,t/.01,(lengde-t)/.03);
+  d.setInt16(44+i*2,Math.sin(2*Math.PI*frek*t)*env*.6*32767,true);}
+ let bin='';const u8=new Uint8Array(buf);for(let i=0;i<u8.length;i++)bin+=String.fromCharCode(u8[i]);
+ return 'data:audio/wav;base64,'+btoa(bin);}
+const PIP={};
+function pipLyder(){
+ if(PIP.kort)return;
+ [['kort',880,.12],['arbeid',990,.3],['pause',660,.3]].forEach(([k,f,l])=>{
+  const a=new Audio(lagPip(f,l));a.preload='auto';a.setAttribute('playsinline','');PIP[k]=a;});}
+// Må kjøres i trykket på Start: spiller hvert lydelement stumt én gang så iPhone tillater dem senere
+function pipLasOpp(){
+ try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+ pipLyder();
+ Object.values(PIP).forEach(a=>{try{a.muted=true;a._prim=true;const p=a.play();
+  // Et ekte pip kan starte før denne er ferdig; da skal det ikke stoppes
+  const av=()=>{if(!a._prim)return;a._prim=false;a.pause();a.currentTime=0;a.muted=false;};
+  if(p&&p.then)p.then(av,()=>{a.muted=false;});else av();}catch(e){}});
+ try{ttLyd=ttLyd||new (window.AudioContext||window.webkitAudioContext)();ttLyd.resume();}catch(e){}}
+function pipWebAudio(frek,lengde){try{if(!ttLyd)return;
+ const spill=()=>{const o=ttLyd.createOscillator(),g=ttLyd.createGain();
+  o.frequency.value=frek;o.connect(g);g.connect(ttLyd.destination);const n=ttLyd.currentTime;
+  g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(.5,n+.01);g.gain.exponentialRampToValueAtTime(.0001,n+lengde);
+  o.start(n);o.stop(n+lengde+.02);};
+ if(ttLyd.state!=='running')ttLyd.resume().then(spill,()=>{});else spill();}catch(e){}}
+function pip(type='kort'){
+ const a=PIP[type],reserve=()=>pipWebAudio({kort:880,arbeid:990,pause:660}[type],type==='kort'?.12:.3);
+ if(!a)return reserve();
+ try{a._prim=false;a.muted=false;a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(reserve);}catch(e){reserve();}}
 async function ttVaaken(){try{if(navigator.wakeLock&&!document.hidden)tt.las=await navigator.wakeLock.request('screen');}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(tt&&!document.hidden){ttVaaken();ttTikk();}});
 
 function ttStart(k,okt,uke){
  const f=faser8(okt,uke);if(!f)return;
- try{ttLyd=ttLyd||new (window.AudioContext||window.webkitAudioContext)();ttLyd.resume();}catch(e){}
+ pipLasOpp();
  const naa=new Date();
  tt={k,okt,uke,f,i:0,faseStart:Date.now(),pauset:0,pauseFra:0,logg:[],sagt:{},
   start:String(naa.getHours()).padStart(2,'0')+':'+String(naa.getMinutes()).padStart(2,'0')};
- si(' ',0);pip(660,.25); // låser opp tale på iPhone, sier ingenting
+ pip('arbeid');si(' ',0); // stum tale låser opp opplesningen på iPhone
  ttVaaken();ttTegn();tt.int=setInterval(ttTikk,250);}
 
 const ttBrukt=()=>((tt.pauseFra||Date.now())-tt.faseStart-tt.pauset)/1000;
@@ -798,13 +828,13 @@ function ttTikk(){
   tt.faseStart+=fase.sek*1000+tt.pauset;tt.pauset=0;tt.i++;tt.sagt={};byttet=true;
   fase=tt.f[tt.i];}
  if(!fase)return ttFerdig(true);
-if(byttet){pip(fase.t==='arbeid'?990:660,.3);ttTegn();return;}
+if(byttet){pip(fase.t==='arbeid'?'arbeid':'pause');ttTegn();return;}
  const igjen=Math.ceil(fase.sek-ttBrukt());
  // Lengre faser: halvveis og ett minutt igjen. Alle: ti sekunder igjen, så pip på 3-2-1
  if(fase.sek>=180&&igjen===Math.round(fase.sek/2)&&!tt.sagt.h){tt.sagt.h=1;si('Halvveis.');}
  if(fase.sek>=180&&igjen===60&&!tt.sagt.m1){tt.sagt.m1=1;si('Ett minutt igjen.');}
  if(fase.sek>=15&&igjen===10&&!tt.sagt.s10){tt.sagt.s10=1;si('Ti sekunder igjen.');}
- if(igjen<=3&&igjen>=1&&!tt.sagt['p'+igjen]){tt.sagt['p'+igjen]=1;pip(880,.12);}
+ if(igjen<=3&&igjen>=1&&!tt.sagt['p'+igjen]){tt.sagt['p'+igjen]=1;pip('kort');}
  ttOppdater();}
 
 function ttTegn(){
@@ -849,7 +879,7 @@ function ttNeste(){
  tt.logg.push({n:fase.n,s:Math.round(ttBrukt())});
  tt.i++;tt.faseStart=Date.now();tt.pauset=0;tt.sagt={};
  const ny=tt.f[tt.i];if(!ny)return ttFerdig(true);
- pip(ny.t==='arbeid'?990:660,.3);ttTegn();}
+ pip(ny.t==='arbeid'?'arbeid':'pause');ttTegn();}
 
 function ttAvbryt(){
  if(!tt)return;
